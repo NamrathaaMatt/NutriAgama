@@ -2,25 +2,34 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { Product } from "@/types/product";
 import Link from "next/link";
+import { Product } from "@/types/product";
+import { useWishlist } from "@/frontend/hooks/use-wishlist";
+import { useCart } from "@/frontend/hooks/use-cart";
+
+function starClass(rating: number, position: number) {
+  if (rating >= position) return "star starFull";
+  if (rating >= position - 0.5) return "star starHalf";
+  return "star";
+}
 
 function Stars({ rating }: { rating: number }) {
-  const full = Math.floor(rating);
-  const hasHalf = rating - full >= 0.5;
   return (
     <span className="stars" aria-hidden="true">
-      {Array.from({ length: 5 }).map((_, i) => {
-        if (i < full) return <span key={i} className="star starFull">★</span>;
-        if (i === full && hasHalf) return <span key={i} className="star starHalf">★</span>;
-        return <span key={i} className="star">★</span>;
-      })}
+      <span className={starClass(rating, 1)}>★</span>
+      <span className={starClass(rating, 2)}>★</span>
+      <span className={starClass(rating, 3)}>★</span>
+      <span className={starClass(rating, 4)}>★</span>
+      <span className={starClass(rating, 5)}>★</span>
     </span>
   );
 }
 
 export default function ProductCard({ product }: { product: Product }) {
-  const [wishlisted, setWishlisted] = useState(false);
+  const { isWishlisted, toggleWishlist } = useWishlist();
+  const { addToCart } = useCart();
+  const [added, setAdded] = useState(false);
+  const liked = isWishlisted(product.slug);
 
   return (
     <Link href={`/shop/${product.slug}`} className="card">
@@ -28,14 +37,14 @@ export default function ProductCard({ product }: { product: Product }) {
         <span className="discountBadge">In Stock</span>
         <button
           type="button"
-          className={`wishlistBtn ${wishlisted ? "wishlistBtnActive" : ""}`}
-          aria-pressed={wishlisted}
+          className={`wishlistBtn ${liked ? "wishlistBtnActive" : ""}`}
+          aria-pressed={liked}
           aria-label={
-            wishlisted ? `Remove ${product.name} from wishlist` : `Add ${product.name} to wishlist`
+            liked ? `Remove ${product.name} from wishlist` : `Add ${product.name} to wishlist`
           }
           onClick={(e) => {
             e.preventDefault();
-            setWishlisted((w) => !w);
+            toggleWishlist(product.slug);
           }}
         >
           ♥
@@ -80,10 +89,13 @@ export default function ProductCard({ product }: { product: Product }) {
             type="button"
             onClick={(e) => {
               e.preventDefault();
-              // your add-to-cart logic here
+              addToCart(product.slug, 1);
+              setAdded(true);
+              setTimeout(() => setAdded(false), 1500);
             }}
           >
-            <span aria-hidden="true">🛒</span> Add to Cart
+            <span aria-hidden="true">{added ? "✓" : "🛒"}</span>{" "}
+            {added ? "Added" : "Add to Cart"}
           </button>
         </div>
       </div>

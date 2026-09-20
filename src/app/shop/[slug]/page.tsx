@@ -1,10 +1,12 @@
 "use client";
 
 import { useState, use } from "react";
-import { notFound } from "next/navigation";
+import { notFound, useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { mockProducts } from "@/frontend/components/mock-products";
+import { useWishlist } from "@/frontend/hooks/use-wishlist";
+import { useCart } from "@/frontend/hooks/use-cart";
 import "@/frontend/styles/shop.css";
 
 type ProductPageProps = {
@@ -22,9 +24,10 @@ type Review = {
 type RelatedProduct = {
   slug: string;
   name: string;
-  description: string;
+  tagline: string;
   price: number | string;
   image: string;
+  hoverImage?: string;
 };
 
 function starClass(rating: number, position: number) {
@@ -71,7 +74,16 @@ function ReviewCard({ review }: { review: Review }) {
 }
 
 function RelatedCard({ item }: { item: RelatedProduct }) {
-  const [liked, setLiked] = useState(false);
+  const { isWishlisted, toggleWishlist } = useWishlist();
+  const { addToCart } = useCart();
+  const [added, setAdded] = useState(false);
+  const liked = isWishlisted(item.slug);
+
+  const handleAdd = () => {
+    addToCart(item.slug, 1);
+    setAdded(true);
+    setTimeout(() => setAdded(false), 1500);
+  };
 
   return (
     <div className="card">
@@ -83,19 +95,28 @@ function RelatedCard({ item }: { item: RelatedProduct }) {
           className={`wishlistBtn productRelatedWishlist ${liked ? "wishlistBtnActive" : ""}`}
           aria-pressed={liked}
           aria-label={liked ? "Remove from wishlist" : "Add to wishlist"}
-          onClick={() => setLiked((v) => !v)}
+          onClick={() => toggleWishlist(item.slug)}
         >
           ♥
         </button>
 
-        <Link href={`/shop/${item.slug}`} className="productRelatedImageLink">
+                <Link href={`/shop/${item.slug}`} className="productRelatedImageLink">
           <Image
             src={item.image}
             alt={item.name}
             fill
-            className="cardImage"
+            className="cardImage cardImageBase"
             sizes="(max-width: 700px) 50vw, 260px"
           />
+          {item.hoverImage && (
+            <Image
+              src={item.hoverImage}
+              alt=""
+              fill
+              className="cardImage cardImageHover"
+              sizes="(max-width: 700px) 50vw, 260px"
+            />
+          )}
         </Link>
       </div>
 
@@ -105,12 +126,13 @@ function RelatedCard({ item }: { item: RelatedProduct }) {
             {item.name}
           </Link>
         </h3>
-        <p className="cardTagline">{item.description}</p>
+        <p className="cardTagline">{item.tagline}</p>
 
         <div className="cardFooter">
           <span className="price">₹{item.price}</span>
-          <button type="button" className="addToCartBtn">
-            <span aria-hidden="true">🛒</span> Add to Cart
+          <button type="button" className="addToCartBtn" onClick={handleAdd}>
+            <span aria-hidden="true">{added ? "✓" : "🛒"}</span>{" "}
+            {added ? "Added" : "Add to Cart"}
           </button>
         </div>
       </div>
@@ -122,15 +144,20 @@ export default function ProductPage({ params }: ProductPageProps) {
   const { slug } = use(params);
   const product = mockProducts.find((p) => p.slug === slug);
 
+  const router = useRouter();
+  const { isWishlisted, toggleWishlist } = useWishlist();
+  const { addToCart } = useCart();
   const [quantity, setQuantity] = useState(1);
   const [activeSlide, setActiveSlide] = useState(0);
-  const [wishlisted, setWishlisted] = useState(false);
   const [showFullDescription, setShowFullDescription] = useState(false);
+  const [added, setAdded] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
 
   if (!product) {
     notFound();
   }
 
+  const wishlisted = isWishlisted(slug);
   const images = [product.image, product.hoverImage].filter(Boolean) as string[];
   const others = mockProducts.filter((p) => p.slug !== slug);
 
@@ -138,6 +165,27 @@ export default function ProductPage({ params }: ProductPageProps) {
     setActiveSlide((i) => (i === 0 ? images.length - 1 : i - 1));
   const goNext = () =>
     setActiveSlide((i) => (i === images.length - 1 ? 0 : i + 1));
+
+  const handleAddToCart = () => {
+    addToCart(slug, quantity);
+    setAdded(true);
+    setTimeout(() => setAdded(false), 1500);
+  };
+
+  const handleBuyNow = () => {
+    addToCart(slug, quantity);
+    router.push("/cart");
+  };
+
+  const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setLinkCopied(true);
+      setTimeout(() => setLinkCopied(false), 1500);
+    } catch {
+      // clipboard permission denied or unavailable — fail silently
+    }
+  };
 
   return (
     <div className="page">
@@ -153,7 +201,7 @@ export default function ProductPage({ params }: ProductPageProps) {
               className={`wishlistBtn productGalleryWishlist ${wishlisted ? "wishlistBtnActive" : ""}`}
               aria-pressed={wishlisted}
               aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
-              onClick={() => setWishlisted((w) => !w)}
+              onClick={() => toggleWishlist(slug)}
             >
               ♥
             </button>
@@ -223,6 +271,15 @@ export default function ProductPage({ params }: ProductPageProps) {
               <span className="productSpecLabel">Net Weight</span>
               <span className="productSpecValue">{product.netWeight}</span>
             </div>
+            <button
+              type="button"
+              className="productShareBtn"
+              onClick={handleCopyLink}
+              aria-label="Copy product link"
+            >
+              <span aria-hidden="true">{linkCopied ? "✓" : "🔗"}</span>{" "}
+              {linkCopied ? "Copied!" : "Copy Link"}
+            </button>
           </div>
 
           <div className="productSpecRow">
@@ -250,10 +307,15 @@ export default function ProductPage({ params }: ProductPageProps) {
                 +
               </button>
             </div>
-            <button type="button" className="addToCartBtn productAddToCartBtn">
-              <span aria-hidden="true">🛒</span> Add to Cart
+            <button
+              type="button"
+              className="addToCartBtn productAddToCartBtn"
+              onClick={handleAddToCart}
+            >
+              <span aria-hidden="true">{added ? "✓" : "🛒"}</span>{" "}
+              {added ? "Added" : "Add to Cart"}
             </button>
-            <button type="button" className="buyNowBtn">
+            <button type="button" className="buyNowBtn" onClick={handleBuyNow}>
               Buy Now
             </button>
           </div>
