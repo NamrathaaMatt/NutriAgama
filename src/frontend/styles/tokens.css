@@ -1,0 +1,40 @@
+:root {
+  /* ---------- Brand palette ---------- */
+  --color-ivory: #fbf7f0;
+  --color-cream: #f3ead9;
+  --color-deep-green: #1f3d2b;
+  --color-deep-green-dark: #142a1d;
+  --color-deep-green-light: #2f5940;
+  --color-golden: #c79a45;
+  --color-golden-light: #e0bd74;
+  --color-terracotta: #b85c38;
+  --color-charcoal: #2b2521;
+  --color-text-muted: #6b6058;
+  --color-border: #e4d9c6;
+  --color-white: #ffffff;
+  --color-error: #b3261e;
+  --color-success: #1f7a4d;
+
+  /* ---------- Typography ---------- */
+  --font-heading: var(--font-heading), Georgia, serif;
+  --font-body: var(--font-body), -apple-system, sans-serif;
+
+  /* ---------- Spacing scale ---------- */
+  --space-xs: 0.5rem;
+  --space-sm: 0.75rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2.5rem;
+  --space-2xl: 4rem;
+
+  /* ---------- Radius & shadow ---------- */
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 24px;
+  --shadow-soft: 0 4px 24px rgba(31, 61, 43, 0.08);
+  --shadow-elevated: 0 12px 40px rgba(31, 61, 43, 0.14);
+
+  /* ---------- Motion ---------- */
+  --transition-fast: 150ms ease;
+  --transition-base: 240ms ease;
+}

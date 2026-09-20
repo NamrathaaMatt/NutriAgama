@@ -1,0 +1,141 @@
+.wrapper {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: var(--space-2xl) var(--space-lg);
+}
+
+.progress {
+  display: flex;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-2xl);
+  justify-content: center;
+}
+
+.dot,
+.dotActive {
+  width: 32px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--color-border);
+  transition: background var(--transition-base);
+}
+
+.dotActive {
+  background: var(--color-deep-green);
+}
+
+.stepContent {
+  animation: fadeSlideIn 0.4s ease;
+}
+
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.heading {
+  font-size: 2rem;
+  text-align: center;
+  margin-bottom: var(--space-xs);
+}
+
+.subtext {
+  text-align: center;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-xl);
+}
+
+.optionsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-md);
+  margin-bottom: var(--space-2xl);
+}
+
+.option,
+.optionSelected {
+  padding: var(--space-lg);
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--color-border);
+  background: var(--color-white);
+  color: var(--color-charcoal);
+  font-weight: 500;
+  text-align: left;
+  transition: border-color var(--transition-fast), background var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.option:hover {
+  border-color: var(--color-deep-green-light);
+  transform: translateY(-2px);
+}
+
+.optionSelected {
+  border-color: var(--color-deep-green);
+  background: rgba(31, 61, 43, 0.06);
+  color: var(--color-deep-green);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.skipBtn {
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+  text-decoration: underline;
+}
+
+.nextBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 140px;
+  padding: 0.85rem 1.75rem;
+  background: var(--color-deep-green);
+  color: var(--color-white);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  transition: background var(--transition-fast);
+}
+
+.nextBtn:hover:not(:disabled) {
+  background: var(--color-deep-green-light);
+}
+
+.nextBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: var(--color-white);
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 560px) {
+  .optionsGrid {
+    grid-template-columns: 1fr;
+  }
+}
