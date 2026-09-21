@@ -1,0 +1,124 @@
+/* ================================================================
+   contactForm.css — Nutri Agama Contact Page
+   Concept A · Heirloom Editorial (animated)
+   ================================================================ */
+
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&family=Work+Sans:wght@300;400;500;600&display=swap");
+
+:root {
+  --paper:      #f7f1e4;
+  --paper-deep: #efe6d2;
+  --ink:        #26231d;
+  --ink-body:   #5a4e3c;
+  --moss:       #4b5a3a;
+  --clay:       #a85c37;
+  --line:       #d9cbae;
+  --font-display: "Fraunces", Georgia, serif;
+  --font-body:    "Work Sans", sans-serif;
+  --ease:        cubic-bezier(0.22, 0.7, 0.22, 1);
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+.contact-page { position: relative; background: var(--paper); color: var(--ink-body); font-family: var(--font-body); overflow-x: hidden; }
+.contact-page a { text-decoration: none; color: inherit; }
+
+.c-grain {
+  position: absolute; inset: 0; pointer-events: none; z-index: 0;
+  background:
+    repeating-linear-gradient(115deg, rgba(75,90,58,.05) 0 2px, transparent 2px 90px),
+    radial-gradient(circle at 85% 10%, rgba(168,92,55,.08), transparent 55%);
+}
+
+.c-container { max-width: 1160px; margin: 0 auto; padding: 0 32px; position: relative; z-index: 1; }
+@media (max-width: 640px) { .c-container { padding: 0 20px; } }
+
+/* ── reveal ────────────────────────────────────────────────── */
+.c-reveal, .c-reveal-left, .c-reveal-right {
+  opacity: 0; transform: translateY(30px);
+  transition: opacity .75s var(--ease), transform .75s var(--ease);
+}
+.c-reveal-left { transform: translateX(-34px); }
+.c-reveal-right { transform: translateX(34px); }
+.c-reveal.visible, .c-reveal-left.visible, .c-reveal-right.visible { opacity: 1; transform: none; }
+
+/* ── hero ──────────────────────────────────────────────────── */
+.c-hero { padding: 7rem 0 2.5rem; text-align: center; position: relative; }
+.c-eyebrow { display: block; font-size: .78rem; letter-spacing: .1em; text-transform: uppercase; color: var(--moss); margin-bottom: .6rem; }
+.c-heading { font-family: var(--font-display); font-weight: 500; font-size: clamp(2rem, 4.6vw, 3.1rem); color: var(--ink); margin-bottom: 1rem; }
+.c-sub { color: var(--ink-body); max-width: 50ch; margin: 0 auto; line-height: 1.7; }
+
+/* ── quick actions ─────────────────────────────────────────── */
+.c-quick-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin: 2.5rem 0 3.5rem; }
+.c-quick-card {
+  display: block; background: var(--paper); border: 1px solid var(--line); border-radius: 4px;
+  padding: 1.4rem 1.2rem; transition: transform .3s var(--ease), border-color .3s ease, box-shadow .3s ease;
+}
+.c-quick-card:hover { transform: translateY(-4px); border-color: var(--clay); box-shadow: 0 16px 28px -22px rgba(38,35,29,.35); }
+.c-quick-card__icon { font-size: 1.4rem; margin-bottom: .6rem; display: inline-block; transition: transform .3s var(--ease-bounce); }
+.c-quick-card:hover .c-quick-card__icon { transform: scale(1.2) rotate(-6deg); }
+.c-quick-card__label { font-family: var(--font-display); font-weight: 500; font-size: 1.02rem; color: var(--ink); margin-bottom: .25rem; }
+.c-quick-card__sub { font-size: .78rem; color: var(--ink-body); word-break: break-word; }
+
+/* ── form + offices grid ───────────────────────────────────── */
+.c-grid { display: grid; grid-template-columns: 1.3fr 1fr; gap: 2.5rem; padding-bottom: 6rem; align-items: start; }
+.c-form-panel { background: var(--paper-deep); border: 1px solid var(--line); padding: 2.4rem; }
+.c-form-panel h2 { font-family: var(--font-display); font-weight: 500; font-size: 1.5rem; margin-bottom: 1.6rem; color: var(--ink); }
+
+.c-offices { display: flex; flex-direction: column; gap: 1rem; }
+.c-office-card { background: var(--paper); border: 1px solid var(--line); padding: 1.4rem; transition: transform .3s var(--ease), border-color .3s ease; }
+.c-office-card:hover { transform: translateY(-3px); border-color: var(--clay); }
+.c-office-card__title { font-family: var(--font-display); font-weight: 500; font-size: 1.05rem; margin-bottom: .5rem; color: var(--ink); }
+.c-office-card__line { font-size: .85rem; color: var(--ink-body); line-height: 1.6; }
+
+/* ── form fields ───────────────────────────────────────────── */
+.form { display: flex; flex-direction: column; }
+.formRow { display: grid; grid-template-columns: 1fr 1fr; gap: 1.4rem; }
+.inputGroup { margin-bottom: 1.2rem; }
+.inputLabel { display: block; font-size: .7rem; letter-spacing: .07em; text-transform: uppercase; color: var(--moss); margin-bottom: .4rem; }
+.inputUnderline { position: relative; }
+.inputUnderline::after {
+  content: ''; position: absolute; left: 0; bottom: 0; height: 1px; width: 0%;
+  background: var(--clay); transition: width .4s var(--ease);
+}
+.inputUnderline:focus-within::after { width: 100%; }
+.input, .textarea {
+  width: 100%; border: none; border-bottom: 1px solid var(--line); background: none;
+  padding: .55rem 0; font-family: var(--font-body); font-size: .92rem; color: var(--ink);
+}
+.input:focus, .textarea:focus { outline: none; }
+.textarea { min-height: 96px; resize: vertical; }
+
+.submitRow { display: flex; align-items: center; gap: 1rem; margin-top: .6rem; flex-wrap: wrap; }
+.submitBtn {
+  position: relative; overflow: hidden; font-family: var(--font-body); font-size: .85rem;
+  border: 1px solid var(--ink); color: var(--ink); background: none; padding: .75rem 1.6rem;
+  border-radius: 2px; cursor: pointer; transition: background .25s ease, color .25s ease;
+}
+.submitBtn:hover:not(:disabled) { background: var(--ink); color: var(--paper); }
+.submitBtn:disabled { opacity: .6; cursor: default; }
+.c-ripple {
+  position: absolute; border-radius: 50%; background: rgba(247,241,228,.55);
+  transform: scale(0); animation: rippleGo .6s ease-out; pointer-events: none;
+}
+@keyframes rippleGo { to { transform: scale(3); opacity: 0; } }
+
+.statusMsgSuccess, .statusMsgError {
+  display: inline-flex; align-items: center; gap: .4rem; font-size: .85rem;
+  opacity: 0; transition: opacity .35s ease;
+}
+.statusMsgSuccess.show, .statusMsgError.show { opacity: 1; }
+.statusMsgSuccess { color: var(--moss); }
+.statusMsgError { color: #a83737; }
+.checkIcon { width: 16px; height: 16px; }
+.checkIcon path { stroke-dasharray: 24; stroke-dashoffset: 24; animation: checkDraw .5s .1s ease forwards; }
+@keyframes checkDraw { to { stroke-dashoffset: 0; } }
+
+/* ── responsive ────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .c-grid { grid-template-columns: 1fr; }
+  .c-quick-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 600px) {
+  .formRow { grid-template-columns: 1fr; }
+}
