@@ -1,5 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { ToastProvider } from "@/frontend/hooks/use-toast";
+import { WishlistProvider } from "@/frontend/hooks/use-wishlist";
+import { CartProvider } from "@/frontend/hooks/use-cart";
+
 import "./globals.css";
 
 const geistSans = Geist({
@@ -20,7 +24,13 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
-      <body>{children}</body>
+      <body>
+        <ToastProvider>
+          <WishlistProvider>
+            <CartProvider>{children}</CartProvider>
+          </WishlistProvider>
+        </ToastProvider>
+      </body>
     </html>
   );
 }
