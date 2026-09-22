@@ -1837,3 +1837,37 @@
 .cartSuggestionCard:hover .cartSuggestionImageHover {
   opacity: 1;
 }
+
+.shop-now-btn {
+  animation: shakeBounce 2.5s ease-in-out infinite;
+}
+
+@keyframes shakeBounce {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  10% {
+    transform: translateY(0) rotate(-3deg);
+  }
+  20% {
+    transform: translateY(0) rotate(3deg);
+  }
+  30% {
+    transform: translateY(0) rotate(-3deg);
+  }
+  40% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  60% {
+    transform: translateY(0);
+  }
+  70% {
+    transform: translateY(-5px);
+  }
+  80% {
+    transform: translateY(0);
+  }
+}
