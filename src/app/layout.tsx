@@ -1,6 +1,7 @@
 ﻿import type { Metadata } from "next";
 import { Fraunces, Inter } from "next/font/google";
 import { ToastProvider } from "@/frontend/hooks/use-toast";
+import { ProductsProvider } from "@/frontend/hooks/use-products";
 import { WishlistProvider } from "@/frontend/hooks/use-wishlist";
 import { CartProvider } from "@/frontend/hooks/use-cart";
 import "./globals.css";
@@ -28,9 +29,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html lang="en" className={`${fraunces.variable} ${inter.variable}`}>
       <body>
         <ToastProvider>
-          <WishlistProvider>
-            <CartProvider>{children}</CartProvider>
-          </WishlistProvider>
+          <ProductsProvider>
+            <WishlistProvider>
+              <CartProvider>{children}</CartProvider>
+            </WishlistProvider>
+          </ProductsProvider>
         </ToastProvider>
       </body>
     </html>

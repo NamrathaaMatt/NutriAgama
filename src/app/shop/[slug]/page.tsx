@@ -4,7 +4,7 @@ import { useState, use } from "react";
 import { notFound, useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { mockProducts } from "@/frontend/components/mock-products";
+import { useProducts } from "@/frontend/hooks/use-products";
 import { useWishlist } from "@/frontend/hooks/use-wishlist";
 import { useCart } from "@/frontend/hooks/use-cart";
 import "@/frontend/styles/shop.css";
@@ -100,7 +100,7 @@ function RelatedCard({ item }: { item: RelatedProduct }) {
           ♥
         </button>
 
-                <Link href={`/shop/${item.slug}`} className="productRelatedImageLink">
+        <Link href={`/shop/${item.slug}`} className="productRelatedImageLink">
           <Image
             src={item.image}
             alt={item.name}
@@ -142,7 +142,8 @@ function RelatedCard({ item }: { item: RelatedProduct }) {
 
 export default function ProductPage({ params }: ProductPageProps) {
   const { slug } = use(params);
-  const product = mockProducts.find((p) => p.slug === slug);
+  const { products, loaded } = useProducts();
+  const product = products.find((p) => p.slug === slug);
 
   const router = useRouter();
   const { isWishlisted, toggleWishlist } = useWishlist();
@@ -153,13 +154,17 @@ export default function ProductPage({ params }: ProductPageProps) {
   const [added, setAdded] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
 
+  if (!loaded) {
+    return <div className="page" />;
+  }
+
   if (!product) {
     notFound();
   }
 
   const wishlisted = isWishlisted(slug);
   const images = [product.image, product.hoverImage].filter(Boolean) as string[];
-  const others = mockProducts.filter((p) => p.slug !== slug);
+  const others = products.filter((p) => p.slug !== slug);
 
   const goPrev = () =>
     setActiveSlide((i) => (i === 0 ? images.length - 1 : i - 1));
