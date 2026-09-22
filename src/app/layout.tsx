@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ToastProvider } from "@/frontend/hooks/use-toast";
+import { ProductsProvider } from "@/frontend/hooks/use-products";
 import { WishlistProvider } from "@/frontend/hooks/use-wishlist";
 import { CartProvider } from "@/frontend/hooks/use-cart";
 
@@ -26,9 +27,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
       <body>
         <ToastProvider>
-          <WishlistProvider>
-            <CartProvider>{children}</CartProvider>
-          </WishlistProvider>
+          <ProductsProvider>
+            <WishlistProvider>
+              <CartProvider>{children}</CartProvider>
+            </WishlistProvider>
+          </ProductsProvider>
         </ToastProvider>
       </body>
     </html>
