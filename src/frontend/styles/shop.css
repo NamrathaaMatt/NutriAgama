@@ -422,9 +422,11 @@
 }
 
 .promoTitle {
+  font-family: 'Allura', cursive;
   font-size: 1.8rem;
   font-weight: 600;
   margin: 0 0 12px;
+  color: #dad5c7;
 }
 
 .promoFeatures {
