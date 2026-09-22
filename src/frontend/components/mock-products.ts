@@ -47,7 +47,7 @@ badges: ["🌿 100% Natural", "🌱 Plant Based"],
     rating: 4.5,
     reviewCount: 256,
     image: "/images/products/Moringa.png", 
-    hoverImage: "/images/products/moringa-hover.png",
+    hoverImage: "/images/products/Moringa-hover.png",
     howToUse: "Mix 2 tablespoons in warm water or soup. Stir well and consume once daily.",
     reviews: [
   { name: "Priya S.", rating: 5, comment: "Great taste and easy to mix into my morning routine. My skin feels noticeably better after a few weeks." },
