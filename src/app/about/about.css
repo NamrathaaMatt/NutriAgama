@@ -200,16 +200,55 @@ img, svg { max-width: 100%; display: block; }
 .section-heading { font-family: var(--font-display); font-weight: 500; font-size: clamp(1.8rem, 3.2vw, 2.5rem); line-height: 1.2; margin-top: .6rem; color: var(--ink); }
 .section-heading em { font-style: italic; color: var(--clay); }
 
-/* ── BELIEFS ───────────────────────────────────────────────── */
+/* ── BELIEFS (one truth at a time) ─────────────────────────── */
 .about-beliefs { padding: 5.5rem 0; background: var(--paper-deep); }
-.about-beliefs__grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.6rem; }
-.belief-card { padding: 1.4rem; border-radius: 4px; transition: transform .3s var(--ease), background .3s ease; }
-.belief-card:hover { background: rgba(75,90,58,.07); transform: translateY(-6px); }
-.belief-card__num { font-family: var(--font-display); color: var(--clay); font-size: .85rem; }
-.belief-card__icon { font-size: 1.6rem; margin: .5rem 0; display: inline-block; transition: transform .35s var(--ease-bounce); }
-.belief-card:hover .belief-card__icon { transform: scale(1.25) rotate(-8deg); }
-.belief-card__title { font-family: var(--font-display); font-weight: 500; font-size: 1.1rem; margin: .3rem 0 .5rem; color: var(--ink); }
-.belief-card__text { color: var(--ink-body); font-size: .88rem; line-height: 1.6; }
+.belief-stage { display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 3rem; align-items: start; }
+
+.belief-rail { display: flex; flex-direction: column; gap: .5rem; }
+.belief-rail__item {
+  position: relative; display: flex; align-items: center; gap: .8rem; width: 100%;
+  padding: .85rem 1rem; border: 0; border-radius: 6px; background: transparent;
+  color: var(--ink-body); font-family: var(--font-body); font-size: .85rem; text-align: left;
+  cursor: pointer; overflow: hidden; transition: background .3s ease, color .3s ease;
+}
+.belief-rail__item:hover { background: rgba(75,90,58,.07); }
+.belief-rail__item:focus-visible { outline: 2px solid var(--moss); outline-offset: 2px; }
+.belief-rail__item.is-on { background: var(--paper); color: var(--ink); }
+.belief-rail__icon { font-size: 1.25rem; line-height: 1; transition: transform .35s var(--ease-bounce); }
+.belief-rail__item.is-on .belief-rail__icon { transform: scale(1.2) rotate(-6deg); }
+.belief-rail__num { font-family: var(--font-display); color: var(--clay); }
+.belief-rail__bar {
+  position: absolute; left: 0; bottom: 0; height: 2px; width: 100%; background: var(--clay);
+  transform: scaleX(0); transform-origin: left; animation: beliefBar 5s linear forwards;
+}
+
+.belief-say__title {
+  font-family: var(--font-display); font-weight: 500; font-size: clamp(1.7rem, 3.4vw, 2.6rem);
+  line-height: 1.2; color: var(--ink); max-width: 24ch; min-height: 2.4em; margin: 0;
+}
+.belief-say__rest { visibility: hidden; }
+.belief-say__caret {
+  display: inline-block; width: 2px; height: .85em; margin-left: 2px; background: var(--clay);
+  vertical-align: -.08em; animation: beliefCaret 1s steps(1) infinite;
+}
+.belief-say__text {
+  margin-top: 1.4rem; max-width: 52ch; font-size: 1rem; line-height: 1.75; color: var(--ink-body);
+  opacity: 0; transform: translateY(10px); transition: opacity .6s ease, transform .6s var(--ease);
+}
+.belief-say__text.is-shown { opacity: 1; transform: none; }
+
+@keyframes beliefBar { to { transform: scaleX(1); } }
+@keyframes beliefCaret { 50% { opacity: 0; } }
+
+@media (max-width: 900px) {
+  .belief-stage { grid-template-columns: 1fr; gap: 1.6rem; }
+  .belief-rail { flex-direction: row; flex-wrap: wrap; }
+  .belief-rail__item { width: auto; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .belief-rail__bar, .belief-say__caret { display: none; }
+  .belief-say__text { opacity: 1; transform: none; }
+}
 
 /* ── ROOTS ─────────────────────────────────────────────────── */
 .about-roots { padding: 5.5rem 0; }
@@ -255,19 +294,79 @@ img, svg { max-width: 100%; display: block; }
 .mission-pills.visible .mission-pill { opacity: 1; transform: translateY(0) scale(1); }
 .mission-pills.reveal.visible .mission-pill { opacity: 1; transform: translateY(0) scale(1); }
 
-/* ── APPROACH ──────────────────────────────────────────────── */
+/* ── APPROACH (stamp of approval) ──────────────────────────── */
 .about-approach { padding: 5.5rem 0; }
 .approach-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.6rem; }
-.approach-card { text-align: left; padding: 1.2rem; border-radius: 4px; transition: transform .3s var(--ease); }
+.approach-card { text-align: center; padding: 1.2rem; border-radius: 4px; transition: transform .3s var(--ease); }
 .approach-card:hover { transform: translateY(-5px); }
 .approach-card__number { font-family: var(--font-display); color: var(--line); font-size: 1.1rem; }
+
 .approach-card__icon-wrap {
-  width: 46px; height: 46px; margin: .8rem 0;
-  transform: scale(0) rotate(-25deg); transition: transform .6s .15s var(--ease-bounce);
+  --stamp-delay: calc(.35s + var(--i, 0) * .3s);
+  position: relative; width: 88px; height: 88px; margin: .8rem auto 1.1rem;
+  display: flex; align-items: center; justify-content: center;
+  border: 1.5px solid var(--moss); border-radius: 50%; background: var(--paper);
+  box-shadow: 0 8px 16px -10px rgba(38,35,29,.4);
+  opacity: 0;
+  transition: border-color .3s ease, transform .3s var(--ease-bounce);
 }
-.approach-card.visible .approach-card__icon-wrap { transform: scale(1) rotate(0); }
+.approach-card__icon-wrap::before {
+  content: ''; position: absolute; inset: 5px;
+  border: 1px dashed var(--line); border-radius: 50%;
+}
+.approach-card__icon-wrap::after {
+  content: ''; position: absolute; inset: -2px;
+  border: 2px solid var(--clay); border-radius: 50%;
+  opacity: 0; pointer-events: none;
+}
+.approach-card__icon-wrap svg { position: relative; z-index: 1; width: 44px; height: 44px; }
+
+.approach-card.visible .approach-card__icon-wrap {
+  opacity: 1;
+  animation: stampThud .65s var(--stamp-delay) var(--ease) backwards;
+}
+.approach-card:hover .approach-card__icon-wrap { border-color: var(--clay); transform: scale(1.05); }
+
+/* after the stamp lands: slow-turning seal edge, soft ripple, floating icon */
+.approach-card.visible .approach-card__icon-wrap::before { animation: sealSpin 28s linear infinite; }
+.approach-card.visible .approach-card__icon-wrap::after {
+  animation:
+    inkRing .9s calc(var(--stamp-delay) + .32s) ease-out,
+    sealRipple 3.8s calc(var(--stamp-delay) + 1.8s) ease-out infinite;
+}
+.approach-card.visible .approach-card__icon-wrap svg {
+  animation: iconFloat 4.5s calc(var(--stamp-delay) + .9s + var(--i, 0) * .5s) ease-in-out infinite;
+}
+
+@keyframes stampThud {
+  0%   { transform: scale(2.4) rotate(-14deg); opacity: 0; }
+  50%  { transform: scale(.86) rotate(2deg);   opacity: 1; }
+  70%  { transform: scale(1.07) rotate(-1deg); }
+  85%  { transform: scale(.98); }
+  100% { transform: scale(1) rotate(0); opacity: 1; }
+}
+@keyframes inkRing { 0% { transform: scale(1); opacity: .55; } 100% { transform: scale(1.9); opacity: 0; } }
+@keyframes sealSpin { to { transform: rotate(360deg); } }
+@keyframes sealRipple {
+  0%   { transform: scale(1);   opacity: .32; }
+  70%  { transform: scale(1.6); opacity: 0; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+@keyframes iconFloat {
+  0%, 100% { transform: translateY(0) rotate(0); }
+  50%      { transform: translateY(-3px) rotate(2.5deg); }
+}
+
 .approach-card__title { font-family: var(--font-display); font-weight: 500; font-size: 1.05rem; margin-bottom: .4rem; color: var(--ink); }
-.approach-card__text { font-size: .85rem; color: var(--ink-body); line-height: 1.6; }
+.approach-card__text { font-size: .85rem; color: var(--ink-body); line-height: 1.6; max-width: 30ch; margin: 0 auto; }
+
+@media (prefers-reduced-motion: reduce) {
+  .approach-card__icon-wrap { opacity: 1; }
+  .approach-card.visible .approach-card__icon-wrap,
+  .approach-card.visible .approach-card__icon-wrap::before,
+  .approach-card.visible .approach-card__icon-wrap::after,
+  .approach-card.visible .approach-card__icon-wrap svg { animation: none; }
+}
 
 /* ── FOUNDERS ──────────────────────────────────────────────── */
 .about-founders { padding: 5.5rem 0; background: var(--paper-deep); }
@@ -276,7 +375,7 @@ img, svg { max-width: 100%; display: block; }
   position: relative; height: 460px; border: 1px solid var(--line); overflow: hidden; cursor: pointer;
   transition: transform .35s var(--ease), box-shadow .35s var(--ease);
 }
-.founder-card:hover, .founder-card.is-open { transform: translateY(-6px); box-shadow: 0 26px 46px -26px rgba(38,35,29,.4); }
+.founder-card.is-open { transform: translateY(-6px); box-shadow: 0 26px 46px -26px rgba(38,35,29,.4); }
 .founder-card::before {
   content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--clay); z-index: 4;
   transform: scaleY(0); transform-origin: top; transition: transform .7s .1s var(--ease);
@@ -286,14 +385,14 @@ img, svg { max-width: 100%; display: block; }
 .founder-card__img { position: absolute; inset: 0; opacity: 0; transform: scale(1.04); transition: opacity .8s ease, transform .8s ease; background: linear-gradient(160deg, var(--paper-deep), var(--line)); }
 .founder-card.visible .founder-card__img { opacity: 1; }
 .founder-card__img img { transition: transform .6s var(--ease); }
-.founder-card:hover .founder-card__img img, .founder-card.is-open .founder-card__img img { transform: scale(1.02); }
+.founder-card.is-open .founder-card__img img { transform: scale(1.02); }
 
 .founder-card__scrim {
   position: absolute; inset: 0; z-index: 1;
   background: linear-gradient(to top, rgba(38,35,29,.92) 0%, rgba(38,35,29,.55) 30%, rgba(38,35,29,.05) 60%, transparent 75%);
   transition: opacity .4s ease;
 }
-.founder-card:hover .founder-card__scrim, .founder-card.is-open .founder-card__scrim { opacity: 0; }
+.founder-card.is-open .founder-card__scrim { opacity: 0; }
 
 .founder-card__badge {
   position: absolute; top: 1.4rem; right: 1.4rem; z-index: 3; font-size: .68rem; letter-spacing: .06em;
@@ -301,13 +400,13 @@ img, svg { max-width: 100%; display: block; }
   background: rgba(38,35,29,.4); padding: .3rem .7rem; border-radius: 999px; backdrop-filter: blur(3px);
 }
 .founder-card.visible .founder-card__badge { opacity: 1; }
-.founder-card:hover .founder-card__badge, .founder-card.is-open .founder-card__badge { opacity: 0; transform: translateY(-6px); }
+.founder-card.is-open .founder-card__badge { opacity: 0; transform: translateY(-6px); }
 
 .founder-card__caption {
   position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; padding: 1.6rem 1.7rem;
   transition: opacity .35s ease, transform .35s ease;
 }
-.founder-card:hover .founder-card__caption, .founder-card.is-open .founder-card__caption { opacity: 0; transform: translateY(10px); pointer-events: none; }
+.founder-card.is-open .founder-card__caption { opacity: 0; transform: translateY(10px); pointer-events: none; }
 .founder-card__caption .founder-card__name { color: var(--paper); }
 .founder-card__caption .founder-card__role { color: #d9cbae; }
 .founder-card__hint {
@@ -323,7 +422,17 @@ img, svg { max-width: 100%; display: block; }
   -webkit-backdrop-filter: blur(6px);
   transform: translateY(100%); transition: transform .55s var(--ease);
 }
-.founder-card:hover .founder-card__bio-panel, .founder-card.is-open .founder-card__bio-panel { transform: translateY(0); }
+.founder-card.is-open .founder-card__bio-panel { transform: translateY(0); }
+
+/* hover reveal only for devices with a real mouse — prevents tap-triggered hover/click race on touchscreens */
+@media (hover: hover) and (pointer: fine) {
+  .founder-card:hover { transform: translateY(-6px); box-shadow: 0 26px 46px -26px rgba(38,35,29,.4); }
+  .founder-card:hover .founder-card__img img { transform: scale(1.02); }
+  .founder-card:hover .founder-card__scrim { opacity: 0; }
+  .founder-card:hover .founder-card__badge { opacity: 0; transform: translateY(-6px); }
+  .founder-card:hover .founder-card__caption { opacity: 0; transform: translateY(10px); pointer-events: none; }
+  .founder-card:hover .founder-card__bio-panel { transform: translateY(0); }
+}
 
 .founder-card__name { font-family: var(--font-display); font-weight: 500; font-size: 1.4rem; margin-bottom: .2rem; color: var(--ink); }
 .founder-card__name--panel { font-size: 1.5rem; margin-bottom: .25rem; color: var(--paper); }
@@ -370,7 +479,7 @@ img, svg { max-width: 100%; display: block; }
 /* ── RESPONSIVE ────────────────────────────────────────────── */
 @media (max-width: 900px) {
   .about-origin__grid { grid-template-columns: 1fr; }
-  .about-origin__visual { display: none; }
+  .about-origin__visual { margin: 0 auto; }
   .about-beliefs__grid, .roots-grid, .approach-grid { grid-template-columns: repeat(2, 1fr); }
   .founders-grid { grid-template-columns: 1fr; }
   .about-footer__inner { grid-template-columns: 1fr 1fr; }
@@ -378,4 +487,66 @@ img, svg { max-width: 100%; display: block; }
 @media (max-width: 560px) {
   .about-beliefs__grid, .roots-grid, .approach-grid { grid-template-columns: 1fr; }
   .about-footer__inner { grid-template-columns: 1fr; }
+
+  .about-hero { min-height: 560px; }
+  .about-hero__content { padding: 0 20px; }
+  .about-hero__scroll { display: none; }
+
+  .about-origin__visual { width: 280px; height: 280px; }
+  .about-origin__circle { width: 190px; height: 190px; }
+  .story-icon { width: 54px; margin-left: -27px; margin-top: -27px; }
+  .story-icon__emoji { width: 40px; height: 40px; font-size: 1.1rem; }
+  .story-icon__label { font-size: .58rem; }
+  .story-icon:nth-child(1) { transform: translate(0px, -128px); }
+  .story-icon:nth-child(2) { transform: translate(111px, -64px); }
+  .story-icon:nth-child(3) { transform: translate(111px, 64px); }
+  .story-icon:nth-child(4) { transform: translate(0px, 128px); }
+  .story-icon:nth-child(5) { transform: translate(-111px, 64px); }
+  .story-icon:nth-child(6) { transform: translate(-111px, -64px); }
+
+  .commitments-list { padding-left: 1.8rem; }
+  .commitment-item p { font-size: 1.05rem; }
+
+  /* Mobile: ditch the tap-to-reveal overlay entirely — show photo, then
+     name/role as a caption right under it, then the bio flowing below.
+     Nothing here needs :hover, backdrop-filter, or absolute overlays. */
+  .founder-card {
+    height: auto; cursor: default; overflow: hidden;
+  }
+  .founder-card.is-open, .founder-card { transform: none; box-shadow: none; }
+  .founder-card__img {
+    position: relative; inset: auto; width: 100%; aspect-ratio: 4 / 5;
+    opacity: 1; transform: none;
+  }
+  .founder-card.is-open .founder-card__img img { transform: none; }
+  .founder-card__scrim { display: none; }
+  .founder-card__badge { opacity: 1 !important; transform: none !important; }
+  .founder-card__caption {
+    position: static; opacity: 1 !important; transform: none !important; pointer-events: auto;
+    padding: 1.2rem 1.3rem 0;
+  }
+  .founder-card__caption .founder-card__name { color: var(--ink); }
+  .founder-card__caption .founder-card__role { color: var(--moss); }
+  .founder-card__hint { display: none; }
+  .founder-card__bio-panel {
+    position: static; transform: none !important; background: none; backdrop-filter: none;
+    -webkit-backdrop-filter: none; display: block; padding: .4rem 1.3rem 1.3rem;
+  }
+  .founder-card__bio-panel .founder-card__name--panel,
+  .founder-card__bio-panel .founder-card__role { display: none; }
+  .founder-card__bio-panel .founder-card__bio { color: var(--ink-body); }
+
+  .mission-connector { display: none; }
+}
+@media (max-width: 400px) {
+  .about-origin__visual { width: 240px; height: 240px; }
+  .about-origin__circle { width: 160px; height: 160px; }
+  .story-icon { width: 46px; margin-left: -23px; margin-top: -23px; }
+  .story-icon__emoji { width: 36px; height: 36px; font-size: 1rem; }
+  .story-icon:nth-child(1) { transform: translate(0px, -108px); }
+  .story-icon:nth-child(2) { transform: translate(94px, -54px); }
+  .story-icon:nth-child(3) { transform: translate(94px, 54px); }
+  .story-icon:nth-child(4) { transform: translate(0px, 108px); }
+  .story-icon:nth-child(5) { transform: translate(-94px, 54px); }
+  .story-icon:nth-child(6) { transform: translate(-94px, -54px); }
 }
