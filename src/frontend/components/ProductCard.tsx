@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { Heart } from "lucide-react";
 import { Product } from "@/types/product";
 import { useWishlist } from "@/frontend/hooks/use-wishlist";
 import { useCart } from "@/frontend/hooks/use-cart";
@@ -47,7 +48,7 @@ export default function ProductCard({ product }: { product: Product }) {
             toggleWishlist(product.slug);
           }}
         >
-          ♥
+          <Heart size={18} fill={liked ? "currentColor" : "none"} />
         </button>
 
         <Image

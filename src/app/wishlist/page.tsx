@@ -7,6 +7,8 @@ import { useProducts } from "@/frontend/hooks/use-products";
 import { useWishlist } from "@/frontend/hooks/use-wishlist";
 import { useCart } from "@/frontend/hooks/use-cart";
 import "@/frontend/styles/shop.css";
+import { Heart } from "lucide-react";
+
 
 type WishlistItem = {
   slug: string;
@@ -115,7 +117,7 @@ function WishlistSuggestionCard({ item }: { item: SuggestionProduct }) {
           aria-label={liked ? "Remove from wishlist" : "Add to wishlist"}
           onClick={() => toggleWishlist(item.slug)}
         >
-          ♥
+          <Heart size={18} fill={liked ? "currentColor" : "none"} />
         </button>
 
         <Link href={`/shop/${item.slug}`} className="productRelatedImageLink">
