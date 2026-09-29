@@ -17,6 +17,7 @@ export type Product = {
   reviewCount: number;
   image: string;
   hoverImage?: string;
+  backImage?: string;
   description: string;
   ingredients: string;
   netWeight: string;
