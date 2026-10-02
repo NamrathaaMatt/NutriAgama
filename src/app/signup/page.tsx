@@ -5,6 +5,15 @@ export default function SignupPage() {
   return (
     <div className={styles.page}>
       <div className={styles.visualSide}>
+
+         {/* Heritage image */}
+        <img
+          src="/images/login-heritage.png"
+          alt=""
+          className={styles.heritageImage}
+        />
+
+        
         <div className={styles.pattern} aria-hidden="true" />
         <div className={styles.visualContent}>
           <span className={styles.brandMark}>Nutriagama</span>

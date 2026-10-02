@@ -5,18 +5,32 @@ export default function LoginPage() {
   return (
     <div className={styles.page}>
       <div className={styles.visualSide}>
+
+        {/* Heritage image */}
+        <img
+          src="/images/login-heritage.png"
+          alt=""
+          className={styles.heritageImage}
+        />
+
+        {/* Existing green pattern */}
         <div className={styles.pattern} aria-hidden="true" />
+
+        {/* Existing text */}
         <div className={styles.visualContent}>
           <span className={styles.brandMark}>Nutriagama</span>
+
           <h1 className={styles.headline}>
             Good health,
             <br />
             rooted in tradition.
           </h1>
+
           <p className={styles.subtext}>
             Everyday nutrition inspired by Karnataka&apos;s timeless food
             wisdom.
           </p>
+
           <ul className={styles.highlights}>
             <li>Millet Protein</li>
             <li>Moringa Soup</li>
@@ -29,9 +43,11 @@ export default function LoginPage() {
       <div className={styles.formSide}>
         <div className={styles.formContainer}>
           <h2 className={styles.welcomeHeading}>Welcome back</h2>
+
           <p className={styles.welcomeSubtext}>
             Log in to continue your wellness journey.
           </p>
+
           <LoginForm />
         </div>
       </div>
