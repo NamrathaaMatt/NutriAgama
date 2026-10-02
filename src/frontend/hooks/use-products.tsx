@@ -26,6 +26,7 @@ type ProductRow = {
   how_to_use: string | null;
   image: string;
   hover_image: string | null;
+  back_image: string | null;
   badges: string[] | null;
   rating: number | null;
   review_count: number | null;
@@ -66,6 +67,7 @@ function toProduct(row: ProductRow): Product {
     howToUse: row.how_to_use ?? "",
     image: row.image,
     hoverImage: row.hover_image ?? undefined,
+    backImage: row.back_image ?? undefined,
     badges: row.badges ?? [],
     rating: Number(row.rating ?? 0),
     reviewCount: row.review_count ?? 0,
