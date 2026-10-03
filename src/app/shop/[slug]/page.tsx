@@ -4,10 +4,11 @@ import { useState, use } from "react";
 import { notFound, useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { mockProducts } from "@/frontend/components/mock-products";
+import { useProducts } from "@/frontend/hooks/use-products";
 import { useWishlist } from "@/frontend/hooks/use-wishlist";
 import { useCart } from "@/frontend/hooks/use-cart";
 import "@/frontend/styles/shop.css";
+import { Heart } from "lucide-react";
 
 type ProductPageProps = {
   params: Promise<{ slug: string }>;
@@ -97,10 +98,10 @@ function RelatedCard({ item }: { item: RelatedProduct }) {
           aria-label={liked ? "Remove from wishlist" : "Add to wishlist"}
           onClick={() => toggleWishlist(item.slug)}
         >
-          ♥
+          <Heart size={18} fill={liked ? "currentColor" : "none"} />
         </button>
 
-                <Link href={`/shop/${item.slug}`} className="productRelatedImageLink">
+        <Link href={`/shop/${item.slug}`} className="productRelatedImageLink">
           <Image
             src={item.image}
             alt={item.name}
@@ -142,7 +143,8 @@ function RelatedCard({ item }: { item: RelatedProduct }) {
 
 export default function ProductPage({ params }: ProductPageProps) {
   const { slug } = use(params);
-  const product = mockProducts.find((p) => p.slug === slug);
+  const { products, loaded } = useProducts();
+  const product = products.find((p) => p.slug === slug);
 
   const router = useRouter();
   const { isWishlisted, toggleWishlist } = useWishlist();
@@ -153,13 +155,17 @@ export default function ProductPage({ params }: ProductPageProps) {
   const [added, setAdded] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
 
+  if (!loaded) {
+    return <div className="page" />;
+  }
+
   if (!product) {
     notFound();
   }
 
   const wishlisted = isWishlisted(slug);
-  const images = [product.image, product.hoverImage].filter(Boolean) as string[];
-  const others = mockProducts.filter((p) => p.slug !== slug);
+  const images = [product.image, product.hoverImage, product.backImage].filter(Boolean) as string[];
+  const others = products.filter((p) => p.slug !== slug);
 
   const goPrev = () =>
     setActiveSlide((i) => (i === 0 ? images.length - 1 : i - 1));
@@ -203,7 +209,7 @@ export default function ProductPage({ params }: ProductPageProps) {
               aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
               onClick={() => toggleWishlist(slug)}
             >
-              ♥
+              <Heart size={20} fill={wishlisted ? "currentColor" : "none"} />
             </button>
 
             <Image

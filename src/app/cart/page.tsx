@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { mockProducts } from "@/frontend/components/mock-products";
+import { useProducts } from "@/frontend/hooks/use-products";
 import { useCart } from "@/frontend/hooks/use-cart";
 import "@/frontend/styles/shop.css";
 
@@ -43,8 +43,9 @@ function TrashIcon() {
 }
 
 function CartRow({ line }: { line: CartLine }) {
+  const { products } = useProducts();
   const { updateQuantity, removeFromCart } = useCart();
-  const product = mockProducts.find((p) => p.slug === line.slug);
+  const product = products.find((p) => p.slug === line.slug);
 
   if (!product) return null;
 
@@ -155,19 +156,20 @@ function CartSuggestionCard({ item }: { item: SuggestionProduct }) {
 }
 
 export default function CartPage() {
+  const { products, loaded: productsLoaded } = useProducts();
   const { items, loaded, totalItems, clearCart } = useCart();
 
-  if (!loaded) {
+  if (!loaded || !productsLoaded) {
     return <div className="page" />;
   }
 
   const subtotal = items.reduce((sum, item) => {
-    const product = mockProducts.find((p) => p.slug === item.slug);
+    const product = products.find((p) => p.slug === item.slug);
     return product ? sum + Number(product.price) * item.quantity : sum;
   }, 0);
 
   const cartSlugs = items.map((i) => i.slug);
-  const suggestions = mockProducts.filter((p) => !cartSlugs.includes(p.slug)).slice(0, 4);
+  const suggestions = products.filter((p) => !cartSlugs.includes(p.slug)).slice(0, 4);
 
   return (
     <div className="page">

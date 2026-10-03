@@ -3,10 +3,12 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { mockProducts } from "@/frontend/components/mock-products";
+import { useProducts } from "@/frontend/hooks/use-products";
 import { useWishlist } from "@/frontend/hooks/use-wishlist";
 import { useCart } from "@/frontend/hooks/use-cart";
 import "@/frontend/styles/shop.css";
+import { Heart } from "lucide-react";
+
 
 type WishlistItem = {
   slug: string;
@@ -51,7 +53,7 @@ function WishlistCard({ item }: { item: WishlistItem }) {
           ♥
         </button>
 
-                <Link href={`/shop/${item.slug}`} className="productRelatedImageLink">
+        <Link href={`/shop/${item.slug}`} className="productRelatedImageLink">
           <Image
             src={item.image}
             alt={item.name}
@@ -115,10 +117,10 @@ function WishlistSuggestionCard({ item }: { item: SuggestionProduct }) {
           aria-label={liked ? "Remove from wishlist" : "Add to wishlist"}
           onClick={() => toggleWishlist(item.slug)}
         >
-          ♥
+          <Heart size={18} fill={liked ? "currentColor" : "none"} />
         </button>
 
-                <Link href={`/shop/${item.slug}`} className="productRelatedImageLink">
+        <Link href={`/shop/${item.slug}`} className="productRelatedImageLink">
           <Image
             src={item.image}
             alt={item.name}
@@ -159,15 +161,16 @@ function WishlistSuggestionCard({ item }: { item: SuggestionProduct }) {
 }
 
 export default function WishlistPage() {
+  const { products, loaded: productsLoaded } = useProducts();
   const { slugs, loaded, toggleWishlist } = useWishlist();
   const { addToCart } = useCart();
 
-  if (!loaded) {
+  if (!loaded || !productsLoaded) {
     return <div className="page" />;
   }
 
-  const items = mockProducts.filter((p) => slugs.includes(p.slug));
-  const suggestions = mockProducts.filter((p) => !slugs.includes(p.slug)).slice(0, 4);
+  const items = products.filter((p) => slugs.includes(p.slug));
+  const suggestions = products.filter((p) => !slugs.includes(p.slug)).slice(0, 4);
 
   const handleMoveAllToCart = () => {
     items.forEach((item) => {
@@ -177,7 +180,7 @@ export default function WishlistPage() {
   };
 
   return (
-        <div className="page">
+    <div className="page">
       <div className="wishlistHero">
         <div className="wishlistHeroLeaf" aria-hidden="true">♥</div>
         <div className="wishlistHeroText">
@@ -239,16 +242,16 @@ export default function WishlistPage() {
         )}
 
         {items.length > 0 && (
-  <div className="wishlistMoveAllRow">
-    <button
-      type="button"
-      className="wishlistMoveAllBtn"
-      onClick={handleMoveAllToCart}
-    >
-      🛒 Move All to Cart
-    </button>
-  </div>
-)}
+          <div className="wishlistMoveAllRow">
+            <button
+              type="button"
+              className="wishlistMoveAllBtn"
+              onClick={handleMoveAllToCart}
+            >
+              🛒 Move All to Cart
+            </button>
+          </div>
+        )}
 
         {suggestions.length > 0 && (
           <div className="productRelated wishlistRelated">

@@ -1,3 +1,11 @@
+export type Review = {
+  name: string;
+  rating: number;
+  comment: string;
+  title?: string;
+  date?: string;
+};
+
 export type Product = {
   slug: string;
   name: string;
@@ -9,15 +17,12 @@ export type Product = {
   reviewCount: number;
   image: string;
   hoverImage?: string;
+  backImage?: string;
   description: string;
   ingredients: string;
   netWeight: string;
   badges: string[];
   howToUse: string;
   long_description: string;
-  reviews: {
-  name: string;
-  rating: number;
-  comment: string;
-}[];
+  reviews: Review[];
 };

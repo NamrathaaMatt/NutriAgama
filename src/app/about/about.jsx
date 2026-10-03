@@ -99,6 +99,20 @@ export default function AboutUs() {
   const ashParticles = useParticles(8, { minDur: 6, durRange: 6, maxDelay: 6, minSize: 2, sizeRange: 4 });
   const [openFounder, setOpenFounder] = useState(null);
 
+  // beliefs: "one truth at a time" — active truth, typewriter progress, in-view flag
+  const beliefsRef = useRef(null);
+  const [truth, setTruth] = useState(0);
+  const [typed, setTyped] = useState(beliefs[0].title.length);
+  const [beliefsActive, setBeliefsActive] = useState(false);
+
+  // On mobile the founder cards are plain static content (photo + caption + bio
+  // all in normal flow) — there is no tap interaction there at all, so this
+  // never changes state on small screens, and nothing can flicker/vanish.
+  function handleFounderTap(i) {
+    if (typeof window !== "undefined" && window.matchMedia("(max-width: 560px)").matches) return;
+    setOpenFounder((prev) => (prev === i ? null : i));
+  }
+
   useEffect(() => {
     const selectors = [".reveal", ".reveal-left", ".reveal-right"];
     const observers = selectors.map((sel) => {
@@ -111,6 +125,36 @@ export default function AboutUs() {
     });
     return () => observers.forEach((o) => o.disconnect());
   }, []);
+
+  // only run the beliefs autoplay while the section is on screen
+  useEffect(() => {
+    if (!beliefsRef.current) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => setBeliefsActive(entry.isIntersecting),
+      { threshold: 0.35 }
+    );
+    obs.observe(beliefsRef.current);
+    return () => obs.disconnect();
+  }, []);
+
+  // typewriter + autoplay to the next truth (no autoplay for reduced-motion users)
+  useEffect(() => {
+    const full = beliefs[truth].title.length;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setTyped(full);
+      return;
+    }
+    if (!beliefsActive) return;
+    setTyped(0);
+    let c = 0;
+    const iv = setInterval(() => {
+      c += 1;
+      setTyped(c);
+      if (c >= full) clearInterval(iv);
+    }, 32);
+    const next = setTimeout(() => setTruth((t) => (t + 1) % beliefs.length), 5000);
+    return () => { clearInterval(iv); clearTimeout(next); };
+  }, [truth, beliefsActive]);
 
   function handleHeroMove(e) {
     if (!heroTextRef.current) return;
@@ -238,21 +282,41 @@ export default function AboutUs() {
       </section>
 
       {/* ── BELIEFS ──────────────────────────────────────── */}
-      <section className="about-beliefs">
+      <section className="about-beliefs" ref={beliefsRef}>
         <div className="about-container">
           <div className="section-header reveal">
             <span className="section-eyebrow">Because We Believe</span>
             <h2 className="section-heading">Four truths that <em>guide everything</em> we do.</h2>
           </div>
-          <div className="about-beliefs__grid">
-            {beliefs.map((b, i) => (
-              <div key={i} className="belief-card reveal" style={{ transitionDelay: `${i * 0.1}s` }}>
-                <span className="belief-card__num">0{i + 1}</span>
-                <span className="belief-card__icon">{b.icon}</span>
-                <h3 className="belief-card__title">{b.title}</h3>
-                <p className="belief-card__text">{b.text}</p>
-              </div>
-            ))}
+          <div className="belief-stage reveal">
+            <div className="belief-rail" role="tablist" aria-label="Our four beliefs">
+              {beliefs.map((b, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  role="tab"
+                  aria-selected={truth === i}
+                  className={`belief-rail__item ${truth === i ? "is-on" : ""}`}
+                  onClick={() => setTruth(i)}
+                >
+                  <span className="belief-rail__icon">{b.icon}</span>
+                  <span className="belief-rail__num">0{i + 1}</span>
+                  {truth === i && beliefsActive && (
+                    <span key={`${truth}-bar`} className="belief-rail__bar" />
+                  )}
+                </button>
+              ))}
+            </div>
+            <div className="belief-say" role="tabpanel" aria-label={beliefs[truth].title}>
+              <p className="belief-say__title">
+                <span aria-hidden="true">{beliefs[truth].title.slice(0, typed)}</span>
+                <span className="belief-say__caret" aria-hidden="true" />
+                <span className="belief-say__rest" aria-hidden="true">{beliefs[truth].title.slice(typed)}</span>
+              </p>
+              <p className={`belief-say__text ${typed >= beliefs[truth].title.length ? "is-shown" : ""}`}>
+                {beliefs[truth].text}
+              </p>
+            </div>
           </div>
         </div>
       </section>
@@ -318,7 +382,7 @@ export default function AboutUs() {
           </div>
           <div className="approach-grid">
             {approach.map((a, i) => (
-              <div key={i} className="approach-card reveal" style={{ transitionDelay: `${i * 0.12}s` }}>
+              <div key={i} className="approach-card reveal" style={{ transitionDelay: `${i * 0.12}s`, "--i": i }}>
                 <span className="approach-card__number">0{i + 1}</span>
                 <div className="approach-card__icon-wrap">{a.svg}</div>
                 <h3 className="approach-card__title">{a.title}</h3>
@@ -339,7 +403,7 @@ export default function AboutUs() {
           <div className="founders-grid">
             <div
               className={`founder-card founder-card--primary reveal-left ${openFounder === 0 ? "is-open" : ""}`}
-              onClick={() => setOpenFounder(openFounder === 0 ? null : 0)}
+              onClick={() => handleFounderTap(0)}
             >
               <div className="founder-card__img">
                 <Image src="/founder-veena.jpg" alt="Ms. Veena" fill sizes="(max-width: 700px) 100vw, 50vw" unoptimized style={{ objectFit: "contain", objectPosition: "center" }} />
@@ -362,7 +426,7 @@ export default function AboutUs() {
 
             <div
               className={`founder-card reveal-right ${openFounder === 1 ? "is-open" : ""}`}
-              onClick={() => setOpenFounder(openFounder === 1 ? null : 1)}
+              onClick={() => handleFounderTap(1)}
             >
               <div className="founder-card__img">
                 <Image src="/founder-kiran.jpg" alt="Mr. Kiran" fill sizes="(max-width: 700px) 100vw, 50vw" unoptimized style={{ objectFit: "contain", objectPosition: "center" }} />
@@ -393,7 +457,7 @@ export default function AboutUs() {
             "We did not want to create another <em>health drink</em>.<br />We wanted to create something different."
           </p>
           <p className="promise-attr reveal" style={{ transitionDelay: "0.2s" }}>
-            — Aruva Agama · Siri Nutri · 14/04/26
+            — Aruva Agama · Siri Nutri · 
           </p>
           <div className="promise-pills reveal" style={{ transitionDelay: "0.3s" }}>
             {["🌱 Organically grown", "🚫 No artificial ingredients", "🏺 Generations of knowledge", "🔬 Science-backed", "🌾 Farm to family"].map((p, i) => (
