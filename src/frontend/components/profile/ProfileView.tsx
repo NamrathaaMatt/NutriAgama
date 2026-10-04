@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { updateProfile } from "@/backend/actions/updateProfile";
+import { logOut } from "@/backend/actions/auth";
 import styles from "./ProfileView.module.css";
 
 type ProfileUser = {
@@ -197,6 +198,7 @@ export default function ProfileView({
 }) {
   const router = useRouter();
   const [tab, setTab] = useState<TabId>("details");
+  const [loggingOut, startLogout] = useTransition();
 
   async function save(patch: {
     fullName?: string;
@@ -219,6 +221,19 @@ export default function ProfileView({
       <div className={styles.card}>
         {/* Banner */}
         <div className={styles.banner}>
+          <button
+            type="button"
+            className={styles.logout}
+            onClick={() =>
+              startLogout(async () => {
+                await logOut();
+              })
+            }
+            disabled={loggingOut}
+          >
+            <i className="ti ti-logout" aria-hidden="true" />
+            {loggingOut ? "Logging out…" : "Log out"}
+          </button>
           <span className={styles.greeting}>Namaste</span>
         </div>
 
