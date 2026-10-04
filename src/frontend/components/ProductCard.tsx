@@ -32,6 +32,13 @@ export default function ProductCard({ product }: { product: Product }) {
   const [added, setAdded] = useState(false);
   const liked = isWishlisted(product.slug);
 
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    addToCart(product.slug, 1);
+    setAdded(true);
+    setTimeout(() => setAdded(false), 1500);
+  };
+
   return (
     <Link href={`/shop/${product.slug}`} className="card">
       <div className="cardImageWrap">
@@ -85,16 +92,7 @@ export default function ProductCard({ product }: { product: Product }) {
             <span className="price">₹{product.price}</span>
             <span className="mrp">₹{product.mrp}</span>
           </div>
-          <button
-            className="addToCartBtn"
-            type="button"
-            onClick={(e) => {
-              e.preventDefault();
-              addToCart(product.slug, 1);
-              setAdded(true);
-              setTimeout(() => setAdded(false), 1500);
-            }}
-          >
+          <button className="addToCartBtn" type="button" onClick={handleAddToCart}>
             <span aria-hidden="true">{added ? "✓" : "🛒"}</span>{" "}
             {added ? "Added" : "Add to Cart"}
           </button>
