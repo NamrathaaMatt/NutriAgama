@@ -1,0 +1,19 @@
+.googleBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  width: 100%;
+  padding: 0.85rem;
+  background: var(--color-white);
+  color: var(--color-charcoal);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.googleBtn:hover {
+  background: var(--color-cream);
+  border-color: var(--color-deep-green-light);
+}

@@ -6,6 +6,7 @@ import Link from "next/link";
 import { signUp } from "@/backend/actions/auth";
 import PasswordInput from "./PasswordInput";
 import styles from "./SignupForm.module.css";
+import GoogleButton from "./GoogleButton";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE_REGEX = /^[0-9]{10}$/;
@@ -65,8 +66,14 @@ export default function SignupForm() {
     router.refresh();
   }
 
-  return (
+    return (
     <form className={styles.form} onSubmit={handleSubmit} noValidate>
+      <GoogleButton />
+
+      <div className={styles.divider}>
+        <span>or sign up with email</span>
+      </div>
+
       <div className={styles.field}>
         <label htmlFor="fullName" className={styles.label}>
           Full Name
@@ -157,7 +164,7 @@ export default function SignupForm() {
         </p>
       )}
 
-      <button type="submit" className={styles.submitBtn} disabled={loading}>
+                  <button type="submit" className={styles.submitBtn} disabled={loading}>
         {loading ? <span className={styles.spinner} /> : "Create account"}
       </button>
 

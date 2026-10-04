@@ -22,12 +22,12 @@ export default function OnboardingFlow() {
   async function finish() {
     setLoading(true);
     await saveWellnessPreferences(goals, interests);
-    router.push("/profile");
+    router.push("/");
     router.refresh();
   }
 
   function skip() {
-    router.push("/profile");
+    router.push("/");
   }
 
   return (
