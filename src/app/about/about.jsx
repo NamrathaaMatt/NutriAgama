@@ -97,21 +97,12 @@ export default function AboutUs() {
   const heroTextRef = useRef(null);
   const heroParticles = useParticles(10);
   const ashParticles = useParticles(8, { minDur: 6, durRange: 6, maxDelay: 6, minSize: 2, sizeRange: 4 });
-  const [openFounder, setOpenFounder] = useState(null);
 
   // beliefs: "one truth at a time" — active truth, typewriter progress, in-view flag
   const beliefsRef = useRef(null);
   const [truth, setTruth] = useState(0);
   const [typed, setTyped] = useState(beliefs[0].title.length);
   const [beliefsActive, setBeliefsActive] = useState(false);
-
-  // On mobile the founder cards are plain static content (photo + caption + bio
-  // all in normal flow) — there is no tap interaction there at all, so this
-  // never changes state on small screens, and nothing can flicker/vanish.
-  function handleFounderTap(i) {
-    if (typeof window !== "undefined" && window.matchMedia("(max-width: 560px)").matches) return;
-    setOpenFounder((prev) => (prev === i ? null : i));
-  }
 
   useEffect(() => {
     const selectors = [".reveal", ".reveal-left", ".reveal-right"];
@@ -180,7 +171,7 @@ export default function AboutUs() {
           ))}
         </div>
         <div className="about-hero__content" ref={heroTextRef}>
-          <span className="about-hero__eyebrow">Our Story · Aruva Agama · Siri Nutri</span>
+          <span className="about-hero__eyebrow">Our Story · Aruya Agama · Siri Nutri</span>
           <h1 className="about-hero__heading">
             <span className="hero-line"><span>From <span className="hero-underline">real fields<svg viewBox="0 0 160 12" preserveAspectRatio="none" aria-hidden="true"><path d="M2 7 Q 45 2, 80 7 T 158 6" /></svg></span></span></span>
             <span className="hero-line"><span>to real families.</span></span>
@@ -276,7 +267,7 @@ export default function AboutUs() {
             "Why can't daily nutrition come from real ingredients — the same ones our families have trusted for generations?"
           </p>
           <span className="about-video-section__attr reveal" style={{ transitionDelay: "0.2s" }}>
-            — Aruva Agama · Siri Nutri
+            — Aruya Agama · Siri Nutri
           </span>
         </div>
       </section>
@@ -402,8 +393,7 @@ export default function AboutUs() {
           </div>
           <div className="founders-grid">
             <div
-              className={`founder-card founder-card--primary reveal-left ${openFounder === 0 ? "is-open" : ""}`}
-              onClick={() => handleFounderTap(0)}
+              className="founder-card founder-card--primary reveal-left"
             >
               <div className="founder-card__img">
                 <Image src="/founder-veena.jpg" alt="Ms. Veena" fill sizes="(max-width: 700px) 100vw, 50vw" unoptimized style={{ objectFit: "contain", objectPosition: "center" }} />
@@ -412,12 +402,12 @@ export default function AboutUs() {
               <span className="founder-card__badge">✦ Founder</span>
               <div className="founder-card__caption">
                 <h3 className="founder-card__name">Ms. Veena</h3>
-                <p className="founder-card__role">Aruva Agama Siri Nutri</p>
-                <span className="founder-card__hint">Tap to read more</span>
+                <p className="founder-card__role">Aruya Agama Siri Nutri</p>
+                <span className="founder-card__hint">Hover to read more</span>
               </div>
               <div className="founder-card__bio-panel">
                 <h3 className="founder-card__name founder-card__name--panel">Ms. Veena</h3>
-                <p className="founder-card__role">Aruva Agama Siri Nutri</p>
+                <p className="founder-card__role">Aruya Agama Siri Nutri</p>
                 <p className="founder-card__bio">
                   A believer in the power of the Indian kitchen, Ms. Veena's vision was born from years of watching traditional recipes nourish entire generations. She brought ancient wisdom into a modern, everyday format — ensuring every blend carries the warmth of a grandmother's recipe.
                 </p>
@@ -425,8 +415,7 @@ export default function AboutUs() {
             </div>
 
             <div
-              className={`founder-card reveal-right ${openFounder === 1 ? "is-open" : ""}`}
-              onClick={() => handleFounderTap(1)}
+              className="founder-card reveal-right"
             >
               <div className="founder-card__img">
                 <Image src="/founder-kiran.jpg" alt="Mr. Kiran" fill sizes="(max-width: 700px) 100vw, 50vw" unoptimized style={{ objectFit: "contain", objectPosition: "center" }} />
@@ -435,12 +424,12 @@ export default function AboutUs() {
               <span className="founder-card__badge">Co-Founder</span>
               <div className="founder-card__caption">
                 <h3 className="founder-card__name">Mr. Kiran</h3>
-                <p className="founder-card__role">Aruva Agama Siri Nutri</p>
-                <span className="founder-card__hint">Tap to read more</span>
+                <p className="founder-card__role">Aruya Agama Siri Nutri</p>
+                <span className="founder-card__hint">Hover to read more</span>
               </div>
               <div className="founder-card__bio-panel">
                 <h3 className="founder-card__name founder-card__name--panel">Mr. Kiran</h3>
-                <p className="founder-card__role">Aruva Agama Siri Nutri</p>
+                <p className="founder-card__role">Aruya Agama Siri Nutri</p>
                 <p className="founder-card__bio">
                   Mr. Kiran built the farm-to-family bridge — ensuring every ingredient is grown on their own land, harvested at the right time, and processed without shortcuts. His commitment to quality means what's in the pack is exactly what you see on the label.
                 </p>
@@ -457,7 +446,7 @@ export default function AboutUs() {
             "We did not want to create another <em>health drink</em>.<br />We wanted to create something different."
           </p>
           <p className="promise-attr reveal" style={{ transitionDelay: "0.2s" }}>
-            — Aruva Agama · Siri Nutri · 
+            — Aruya Agama · Siri Nutri · 
           </p>
           <div className="promise-pills reveal" style={{ transitionDelay: "0.3s" }}>
             {["🌱 Organically grown", "🚫 No artificial ingredients", "🏺 Generations of knowledge", "🔬 Science-backed", "🌾 Farm to family"].map((p, i) => (
@@ -503,7 +492,7 @@ export default function AboutUs() {
             </div>
           </div>
           <div className="about-footer__bottom">
-            <p>© {new Date().getFullYear()} Aruva Agama Siri Nutri. All rights reserved.</p>
+            <p>© {new Date().getFullYear()} Aruya Agama Siri Nutri. All rights reserved.</p>
             <p>Made with intention and real ingredients.</p>
           </div>
         </div>

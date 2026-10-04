@@ -372,10 +372,9 @@ img, svg { max-width: 100%; display: block; }
 .about-founders { padding: 5.5rem 0; background: var(--paper-deep); }
 .founders-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.6rem; }
 .founder-card {
-  position: relative; height: 460px; border: 1px solid var(--line); overflow: hidden; cursor: pointer;
+  position: relative; height: 460px; border: 1px solid var(--line); overflow: hidden; cursor: default;
   transition: transform .35s var(--ease), box-shadow .35s var(--ease);
 }
-.founder-card.is-open { transform: translateY(-6px); box-shadow: 0 26px 46px -26px rgba(38,35,29,.4); }
 .founder-card::before {
   content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--clay); z-index: 4;
   transform: scaleY(0); transform-origin: top; transition: transform .7s .1s var(--ease);
@@ -385,14 +384,12 @@ img, svg { max-width: 100%; display: block; }
 .founder-card__img { position: absolute; inset: 0; opacity: 0; transform: scale(1.04); transition: opacity .8s ease, transform .8s ease; background: linear-gradient(160deg, var(--paper-deep), var(--line)); }
 .founder-card.visible .founder-card__img { opacity: 1; }
 .founder-card__img img { transition: transform .6s var(--ease); }
-.founder-card.is-open .founder-card__img img { transform: scale(1.02); }
 
 .founder-card__scrim {
   position: absolute; inset: 0; z-index: 1;
   background: linear-gradient(to top, rgba(38,35,29,.92) 0%, rgba(38,35,29,.55) 30%, rgba(38,35,29,.05) 60%, transparent 75%);
   transition: opacity .4s ease;
 }
-.founder-card.is-open .founder-card__scrim { opacity: 0; }
 
 .founder-card__badge {
   position: absolute; top: 1.4rem; right: 1.4rem; z-index: 3; font-size: .68rem; letter-spacing: .06em;
@@ -400,13 +397,11 @@ img, svg { max-width: 100%; display: block; }
   background: rgba(38,35,29,.4); padding: .3rem .7rem; border-radius: 999px; backdrop-filter: blur(3px);
 }
 .founder-card.visible .founder-card__badge { opacity: 1; }
-.founder-card.is-open .founder-card__badge { opacity: 0; transform: translateY(-6px); }
 
 .founder-card__caption {
   position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; padding: 1.6rem 1.7rem;
   transition: opacity .35s ease, transform .35s ease;
 }
-.founder-card.is-open .founder-card__caption { opacity: 0; transform: translateY(10px); pointer-events: none; }
 .founder-card__caption .founder-card__name { color: var(--paper); }
 .founder-card__caption .founder-card__role { color: #d9cbae; }
 .founder-card__hint {
@@ -422,7 +417,6 @@ img, svg { max-width: 100%; display: block; }
   -webkit-backdrop-filter: blur(6px);
   transform: translateY(100%); transition: transform .55s var(--ease);
 }
-.founder-card.is-open .founder-card__bio-panel { transform: translateY(0); }
 
 /* hover reveal only for devices with a real mouse — prevents tap-triggered hover/click race on touchscreens */
 @media (hover: hover) and (pointer: fine) {
@@ -513,12 +507,11 @@ img, svg { max-width: 100%; display: block; }
   .founder-card {
     height: auto; cursor: default; overflow: hidden;
   }
-  .founder-card.is-open, .founder-card { transform: none; box-shadow: none; }
+  .founder-card { transform: none; box-shadow: none; }
   .founder-card__img {
     position: relative; inset: auto; width: 100%; aspect-ratio: 4 / 5;
     opacity: 1; transform: none;
   }
-  .founder-card.is-open .founder-card__img img { transform: none; }
   .founder-card__scrim { display: none; }
   .founder-card__badge { opacity: 1 !important; transform: none !important; }
   .founder-card__caption {

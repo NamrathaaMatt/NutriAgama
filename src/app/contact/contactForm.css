@@ -122,3 +122,10 @@
 @media (max-width: 600px) {
   .formRow { grid-template-columns: 1fr; }
 }
+
+/* ── svg icons (replace emojis) ────────────────────────────── */
+.c-svg-icon { width: 1.5rem; height: 1.5rem; display: block; color: var(--clay); }
+.c-office-card__icon { display: inline-flex; vertical-align: middle; margin-right: .35rem; }
+.c-office-card__icon .c-svg-icon { width: 1.1rem; height: 1.1rem; }
+.c-office-card__link { color: inherit; text-decoration: underline; text-underline-offset: 3px; transition: color .25s ease; }
+.c-office-card__link:hover { color: var(--clay); }
