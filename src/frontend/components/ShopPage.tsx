@@ -9,6 +9,7 @@ import ShopHero from "./ShopHero";
 import ShopToolbar from "./ShopToolbar";
 import ProductGrid from "./ProductGrid";
 import ShopFooter from "./ShopFooter";
+import Navbar from "./navbar/Navbar";
 
 export default function ShopPage() {
   const { products, loaded } = useProducts();
@@ -26,11 +27,16 @@ export default function ShopPage() {
   };
 
   if (!loaded) {
-    return <div className="page" />;
+    return (
+      <div className="page">
+        <Navbar textTone="black" iconTone="black" fixed autoContrast />
+      </div>
+    );
   }
 
   return (
     <div className="page">
+      <Navbar textTone="black" iconTone="black" fixed autoContrast />
       <ShopHero onShopNow={handleShopNow} />
 
       <div ref={productsRef}>

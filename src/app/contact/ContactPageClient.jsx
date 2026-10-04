@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import ContactForm from './contactForm';
 import './contactForm.css';
+import Navbar from '@/frontend/components/navbar/Navbar';
 
 const EMAIL = 'aruyaagamasirinutri55@gmail.com';
 
@@ -95,6 +96,7 @@ export default function ContactPageClient() {
 
   return (
     <main className="contact-page">
+      <Navbar textTone="black" iconTone="black" fixed autoContrast />
       <div className="c-grain" aria-hidden="true" />
 
       {/* ── HERO ─────────────────────────────────────────── */}
