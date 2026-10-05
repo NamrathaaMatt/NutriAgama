@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { updateProfile } from "@/backend/actions/updateProfile";
 import { logOut } from "@/backend/actions/auth";
+import Navbar from "@/frontend/components/navbar/Navbar";
 import styles from "./ProfileView.module.css";
 
 type ProfileUser = {
@@ -218,6 +219,7 @@ export default function ProfileView({
 
   return (
     <div className={styles.page}>
+      <Navbar textTone="black" iconTone="black" fixed={true} opaque={true} />
       <div className={styles.card}>
         {/* Banner */}
         <div className={styles.banner}>

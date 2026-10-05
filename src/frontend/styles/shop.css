@@ -1,5 +1,9 @@
 /* ---- Shop page: warm cream + olive, photo-forward e-commerce style ---- */
 
+:root {
+  --nav-height: 193px; /* set this to your navbar's real height */
+}
+
 .page {
   --cream: #faf8f2;
   --ink: #26291f;
@@ -1191,7 +1195,7 @@
   justify-content: space-between;
   gap: 24px;
   margin: 0 auto;
-  padding: 32px 6vw;
+  padding: calc(var(--nav-height) + 32px) 6vw 72px;
   background: url("/images/wishlist-hero-bg.jpg") center / cover no-repeat;
   border: none;
   overflow-x: clip;
@@ -1286,6 +1290,7 @@
     flex-direction: column;
     align-items: flex-start;
     text-align: left;
+    padding: 80px 6vw 32px;
   }
 
   .wishlistHeroDecor {
@@ -1301,11 +1306,12 @@
   align-items: center;
   justify-content: space-between;
   gap: 24px;
-  margin: 0 auto;
-  padding: 100px 6vw;
+  margin: 135px auto 0;
+  padding: 100px 6vw 110px;
+  min-height: 360px;
   background-image: url("/images/cart-hero.jpg");
   background-size: cover;
-  background-position: center;
+  background-position: center 65%;
   border: none;
   overflow-x: clip;
 }
@@ -1760,6 +1766,7 @@
     flex-direction: column;
     align-items: flex-start;
     text-align: left;
+    padding: 148px 6vw 100px;
   }
 
   .cartHeroDecor {

@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useProducts } from "@/frontend/hooks/use-products";
 import { useCart } from "@/frontend/hooks/use-cart";
+import Navbar from "@/frontend/components/navbar/Navbar";
 import "@/frontend/styles/shop.css";
 
 type CartLine = {
@@ -173,6 +174,7 @@ export default function CartPage() {
 
   return (
     <div className="page">
+      <Navbar textTone="black" iconTone="black" fixed={true} opaque={true} />
       <div className="cartHero">
         <div className="cartHeroLeaf cartHeroLeafLeft" aria-hidden="true">🌿</div>
         <div className="cartHeroText">

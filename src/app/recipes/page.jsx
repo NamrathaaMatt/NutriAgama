@@ -13,7 +13,7 @@ export default function RecipesPage() {
 
   return (
     <>
-      <Navbar textTone="black" iconTone="black" fixed={true} />
+      <Navbar textTone="black" iconTone="black" fixed autoContrast />
       <main className={`${s.page} ${fontVars}`}>
         <section className={s.recipeHero}>
           <div className={s.recipePattern}></div>
@@ -97,7 +97,7 @@ export default function RecipesPage() {
 
         <section className={`${s.section} ${s.sand}`}>
           <div className={s.inner}>
-            <div className={s.band}>
+            <div className={s.band} data-navbar-tone="white">
               <p className={s.eyebrow} style={{ color: '#e0bd72' }}>Have a recipe idea?</p>
               <h2>Share Your Traditional Recipe</h2>
               <p style={{ maxWidth: '560px', margin: '12px auto 28px' }}>
