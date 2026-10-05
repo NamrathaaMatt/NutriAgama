@@ -4,6 +4,7 @@ import { ToastProvider } from "@/frontend/hooks/use-toast";
 import { ProductsProvider } from "@/frontend/hooks/use-products";
 import { WishlistProvider } from "@/frontend/hooks/use-wishlist";
 import { CartProvider } from "@/frontend/hooks/use-cart";
+import Footer from "@/frontend/home/components/Footer";
 import "./globals.css";
 
 const fraunces = Fraunces({
@@ -46,7 +47,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <ToastProvider>
           <ProductsProvider>
             <WishlistProvider>
-              <CartProvider>{children}</CartProvider>
+              <CartProvider>
+                {children}
+                <Footer />
+              </CartProvider>
             </WishlistProvider>
           </ProductsProvider>
         </ToastProvider>
