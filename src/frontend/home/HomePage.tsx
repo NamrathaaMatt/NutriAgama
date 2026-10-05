@@ -12,6 +12,7 @@ import HomeQuote from "./components/HomeQuote";
 import HomeShopButton from "./components/HomeShopButton";
 import FeaturedSection from "./components/FeaturedSection";
 import HealthBenefitsRedirect from "./components/HealthBenefitsRedirect";
+import RecipeRedirect from "./components/RecipeRedirect";
 import Testimonials from "./components/Testimonials";
 import Navbar from "@/frontend/components/navbar/Navbar";
 
@@ -246,6 +247,7 @@ export default function Home() {
           =================================================== */}
       <FeaturedSection currentSlide={currentSlide} />
       <HealthBenefitsRedirect />
+      <RecipeRedirect />
       <Testimonials />
     </main>
   );
