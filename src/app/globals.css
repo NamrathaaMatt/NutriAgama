@@ -53,6 +53,18 @@ button {
   font-size: 1rem;
 }
 
+/* ── Section-level h2 overrides ───────────────────────────
+   The global h2 rule above sets color: var(--color-deep-green).
+   Sections with dark backgrounds need their own colour.
+   Using #id selector (specificity 0-1-0) beats the element
+   selector (0-0-1) above without needing !important.        */
+
+#testimonials h2 {
+  color: #eadbce;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-weight: 400;
+}
+
 ::selection {
   background: var(--color-golden-light);
   color: var(--color-deep-green-dark);

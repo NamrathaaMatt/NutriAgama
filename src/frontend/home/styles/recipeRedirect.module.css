@@ -1,0 +1,227 @@
+.recipeSection {
+  position: relative;
+  width: 100%;
+  min-height: 560px;
+  overflow: hidden;
+  isolation: isolate;
+  background: #1d2a18;
+}
+
+/* Background image */
+.background {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+
+  background-image: url("../assets/backgrounds/bgrecipe.png");
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+/*
+ * Very subtle overlay.
+ * Keeps the text readable without destroying
+ * the original background artwork.
+ */
+.recipeSection::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+
+  background: linear-gradient(
+    90deg,
+    rgba(18, 31, 17, 0.16) 0%,
+    rgba(18, 31, 17, 0.04) 58%,
+    rgba(18, 31, 17, 0) 100%
+  );
+}
+
+/* Main content */
+.content {
+  position: relative;
+  z-index: 2;
+
+  width: min(520px, 42vw);
+  margin-left: clamp(70px, 17vw, 330px);
+  padding-top: clamp(95px, 8vw, 130px);
+}
+
+/* RECIPES eyebrow */
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+
+  margin-bottom: 28px;
+
+  color: #d9c991;
+
+  font-family: var(--font-body), sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.34em;
+  line-height: 1;
+}
+
+.line {
+  width: 150px;
+  height: 1px;
+  background: rgba(217, 201, 145, 0.7);
+}
+
+/* Heading */
+.content h2 {
+  margin: 0;
+
+  color: #f4efdc;
+
+  font-family: var(--font-heading), serif;
+  font-size: clamp(52px, 4.2vw, 76px);
+  font-weight: 400;
+  line-height: 1.02;
+  letter-spacing: -0.025em;
+}
+
+/* Description */
+.content p {
+  margin: 28px 0 34px;
+
+  color: #e7e0c9;
+
+  font-family: var(--font-heading), serif;
+  font-size: clamp(18px, 1.35vw, 24px);
+  font-weight: 400;
+  line-height: 1.65;
+  letter-spacing: 0.005em;
+}
+
+/* Explore button */
+.exploreButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+
+  min-width: 365px;
+  padding: 18px 28px;
+
+  border: 1px solid rgba(217, 201, 145, 0.95);
+  border-radius: 999px;
+
+  background: rgba(29, 42, 24, 0.12);
+
+  color: #e7d8a7;
+
+  font-family: var(--font-body), sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.24em;
+
+  cursor: pointer;
+
+  transition:
+    background 220ms ease,
+    color 220ms ease,
+    transform 220ms ease,
+    border-color 220ms ease;
+}
+
+.exploreButton:hover {
+  background: rgba(217, 201, 145, 0.14);
+  border-color: #eee2b6;
+  color: #f4efdc;
+  transform: translateX(4px);
+}
+
+.exploreButton:active {
+  transform: translateX(4px) scale(0.985);
+}
+
+.arrow {
+  font-size: 28px;
+  font-weight: 300;
+  line-height: 0.7;
+  letter-spacing: 0;
+  transition: transform 220ms ease;
+}
+
+.exploreButton:hover .arrow {
+  transform: translateX(5px);
+}
+
+/* Tablet */
+@media (max-width: 900px) {
+  .recipeSection {
+    min-height: 500px;
+  }
+
+  .content {
+    width: 52%;
+    margin-left: 8%;
+    padding-top: 90px;
+  }
+
+  .content h2 {
+    font-size: clamp(46px, 6vw, 64px);
+  }
+
+  .content p {
+    font-size: 18px;
+  }
+
+  .exploreButton {
+    min-width: 320px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 640px) {
+  .recipeSection {
+    min-height: 620px;
+  }
+
+  .background {
+    background-position: 67% center;
+  }
+
+  .content {
+    width: calc(100% - 48px);
+    margin-left: 24px;
+    padding-top: 70px;
+  }
+
+  .eyebrow {
+    gap: 14px;
+    margin-bottom: 22px;
+    font-size: 11px;
+  }
+
+  .line {
+    width: 70px;
+  }
+
+  .content h2 {
+    font-size: 48px;
+    line-height: 1.02;
+  }
+
+  .content p {
+    margin-top: 22px;
+    font-size: 17px;
+    line-height: 1.55;
+  }
+
+  .content p br {
+    display: none;
+  }
+
+  .exploreButton {
+    min-width: 0;
+    width: 100%;
+    padding: 16px 22px;
+    font-size: 12px;
+  }
+}

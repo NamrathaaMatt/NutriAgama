@@ -1,0 +1,523 @@
+/* =========================================================
+   SECTION 2 — FEATURED PRODUCTS
+   ========================================================= */
+
+.featured {
+  position: relative;
+  width: 100%;
+  min-height: 100svh;
+  overflow: hidden;
+  display: flex;
+  align-items: stretch;
+}
+
+/* ── Background layers ─────────────────────────────────── */
+
+.featuredBgBase,
+.featuredBgIncoming {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.featuredBgBase {
+  z-index: 0;
+}
+
+.featuredBgIncoming {
+  z-index: 1;
+  /* GSAP drives opacity from 0→1 */
+  opacity: 0;
+  visibility: hidden;
+}
+
+.featuredBgImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+/* ── "ROOTED IN WELLNESS" label ──────────────────────── */
+
+.featuredLabel {
+  position: absolute;
+  top: clamp(48px, 5.5vw, 84px);
+  left: clamp(32px, 5vw, 96px);
+  z-index: 20;
+  font-family: var(--font-heading);
+  font-size: clamp(36px, 4.2vw, 68px);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--color-deep-green);
+  line-height: 1.05;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ── Content wrapper ───────────────────────────────────── */
+
+.featuredContent {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  align-items: center;
+  padding: 80px clamp(32px, 5vw, 96px);
+  /* extra top room for the title */
+  padding-top: clamp(145px, 16vw, 210px);
+}
+
+/* ── LEFT: large featured product image ────────────────── */
+
+.featuredLeft {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.featuredLargeLink {
+  display: block;
+  border-radius: var(--radius-md);
+  outline: none;
+}
+
+.featuredLargeLink:focus-visible .featuredLargeWrap {
+  outline: 2px solid var(--color-golden);
+  outline-offset: 4px;
+  border-radius: var(--radius-md);
+}
+
+.featuredLargeWrap {
+  position: relative;
+  width: min(45vw, 520px);
+  aspect-ratio: 1 / 1.15;
+  border-radius: var(--radius-md);
+}
+
+/* Both images sit on top of each other */
+.featuredLargeImg,
+.featuredLargeImgHover {
+  display: block;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center bottom;
+  user-select: none;
+  pointer-events: none;
+  transition: opacity 260ms ease, transform 300ms ease;
+}
+
+.featuredLargeImg {
+  opacity: 1;
+}
+
+.featuredLargeImgHover {
+  opacity: 0;
+  transform-origin: center bottom;
+}
+
+/* On hover / focus: swap to the product image and scale it up */
+.featuredLargeLink:hover .featuredLargeImg,
+.featuredLargeLink:focus-visible .featuredLargeImg {
+  opacity: 0;
+}
+
+.featuredLargeLink:hover .featuredLargeImgHover,
+.featuredLargeLink:focus-visible .featuredLargeImgHover {
+  opacity: 1;
+  transform: scale(1.5) translateY(-4%);
+}
+
+/* ── RIGHT: info + small cards ─────────────────────────── */
+
+.featuredRight {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(18px, 2.2vw, 28px);
+  padding-left: clamp(16px, 3vw, 48px);
+  /* push the cards to the very bottom */
+  justify-content: space-between;
+  height: 100%;
+}
+
+.featuredInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.featuredName {
+  font-family: var(--font-heading);
+  font-size: clamp(34px, 4vw, 56px);
+  font-weight: 600;
+  color: var(--color-deep-green);
+  line-height: 1.1;
+}
+
+.featuredTagline {
+  font-family: var(--font-heading);
+  font-size: clamp(18px, 1.5vw, 24px);
+  font-weight: 500;
+  color: var(--color-deep-green-light);
+  line-height: 1.35;
+  opacity: 0.92;
+}
+
+.featuredDescription {
+  font-size: clamp(14px, 1.12vw, 17px);
+  font-weight: 400;
+  color: var(--color-charcoal);
+  line-height: 1.7;
+  max-width: 44ch;
+  opacity: 0.9;
+}
+
+/* Benefits single compact line */
+.featuredBenefits {
+  font-size: clamp(12px, 0.95vw, 14.5px);
+  color: var(--color-deep-green);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  opacity: 0.85;
+}
+
+/* Weight + Price row */
+.featuredMeta {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  margin-top: 2px;
+}
+
+.featuredWeight {
+  font-size: clamp(14px, 1.1vw, 17px);
+  color: var(--color-text-muted);
+  font-weight: 400;
+  letter-spacing: 0.04em;
+}
+
+.featuredPrice {
+  font-size: clamp(24px, 2.4vw, 36px);
+  font-weight: 600;
+  color: var(--color-charcoal);
+}
+
+.featuredCta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 28px;
+  border-radius: 999px;
+  background: var(--color-deep-green);
+  color: var(--color-white);
+  font-size: clamp(14px, 1.2vw, 18px);
+  font-weight: 500;
+  text-decoration: none;
+  width: fit-content;
+  transition: background 200ms ease, transform 200ms ease;
+}
+
+.featuredCta:hover {
+  background: var(--color-deep-green-light);
+  transform: translateY(-2px);
+}
+
+/* ── Small product cards ───────────────────────────────── */
+
+.featuredCards {
+  display: flex;
+  gap: clamp(12px, 2vw, 24px);
+}
+
+.featuredCard {
+  flex: 1;
+  max-width: 140px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  border: none;
+  background: none;
+  padding: 0;
+  border-radius: var(--radius-md);
+  transition: transform 180ms ease;
+}
+
+.featuredCard:hover,
+.featuredCard:focus-visible {
+  transform: translateY(-4px);
+  outline: none;
+}
+
+.featuredCard:focus-visible .featuredCardImgWrap {
+  outline: 2px solid var(--color-golden);
+  outline-offset: 3px;
+}
+
+.featuredCardImgWrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(4px);
+}
+
+.featuredCardThumb,
+.featuredCardHover {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  user-select: none;
+  pointer-events: none;
+  transition: opacity 260ms ease;
+}
+
+.featuredCardThumb {
+  opacity: 1;
+}
+
+.featuredCardHover {
+  opacity: 0;
+}
+
+/* Show hero product image on hover/active */
+.featuredCard:hover .featuredCardThumb,
+.featuredCard:focus-visible .featuredCardThumb,
+.featuredCardActive .featuredCardThumb {
+  opacity: 0;
+}
+
+.featuredCard:hover .featuredCardHover,
+.featuredCard:focus-visible .featuredCardHover,
+.featuredCardActive .featuredCardHover {
+  opacity: 1;
+}
+
+/* Active card highlight ring */
+.featuredCardActive .featuredCardImgWrap {
+  box-shadow: 0 0 0 2px var(--color-golden);
+}
+
+.featuredCardLabel {
+  font-size: clamp(11px, 1vw, 13px);
+  font-weight: 500;
+  color: var(--color-deep-green);
+  text-align: center;
+  line-height: 1.3;
+}
+
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 1024px) {
+  .featuredContent {
+    padding: 64px clamp(24px, 4vw, 64px);
+    padding-top: clamp(96px, 11vw, 128px);
+    gap: 0;
+  }
+
+  .featuredLargeWrap {
+    width: min(48vw, 440px);
+  }
+}
+
+
+/* =========================================================
+   MOBILE — stack vertically
+   ========================================================= */
+
+@media (max-width: 768px) {
+  .featuredLabel {
+    display: none;
+  }
+
+  .featuredContent {
+    grid-template-columns: 1fr;
+    padding: 48px 24px 80px;
+    gap: 32px;
+  }
+
+  .featuredLeft {
+    order: 1;
+    margin-top: 14px;
+  }
+
+  .featuredLargeWrap {
+    width: min(72vw, 360px);
+  }
+
+  .featuredRight {
+    order: 2;
+    padding-left: 0;
+    align-items: center;
+    text-align: center;
+    height: auto;
+  }
+
+  .featuredInfo {
+    align-items: center;
+  }
+
+  .featuredDescription {
+    max-width: 52ch;
+  }
+
+  .featuredBenefits {
+    align-items: center;
+  }
+
+  .featuredMeta {
+    justify-content: center;
+  }
+
+  .featuredCards {
+    justify-content: center;
+  }
+
+  .featuredCard {
+    max-width: 100px;
+  }
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .featuredLargeImg,
+  .featuredLargeImgHover,
+  .featuredCardThumb,
+  .featuredCardHover,
+  .featuredCta {
+    transition: none;
+  }
+}
+
+/* =========================================================
+   PER-SLIDE COLOUR PALETTES
+   - Protein & Moringa: Distinct light palettes
+   - Kashaya & Menthe Mudde: Distinct dark palettes
+   ========================================================= */
+
+/* ── 1. PROTEIN (Purple/Mauve background — warm lavender & cream light palette) ── */
+[data-slide="protein"] .featuredLabel {
+  color: #fdebd2;
+}
+[data-slide="protein"] .featuredName {
+  color: #ffffff;
+}
+[data-slide="protein"] .featuredTagline {
+  color: #e8d5f5;
+}
+[data-slide="protein"] .featuredDescription {
+  color: #f3e8dc;
+}
+[data-slide="protein"] .featuredBenefits {
+  color: #f6d9a6;
+}
+[data-slide="protein"] .featuredWeight {
+  color: #d6c4e6;
+}
+[data-slide="protein"] .featuredPrice {
+  color: #ffffff;
+}
+[data-slide="protein"] .featuredCardLabel {
+  color: #faf3ec;
+}
+
+/* ── 2. MORINGA (Deep green background — botanical mint & amber light palette) ── */
+[data-slide="moringa"] .featuredLabel {
+  color: #ebd69d;
+}
+[data-slide="moringa"] .featuredName {
+  color: #fdfdfc;
+}
+[data-slide="moringa"] .featuredTagline {
+  color: #d1ecc5;
+}
+[data-slide="moringa"] .featuredDescription {
+  color: #eaf3e6;
+}
+[data-slide="moringa"] .featuredBenefits {
+  color: #deeea6;
+}
+[data-slide="moringa"] .featuredWeight {
+  color: #bed8b9;
+}
+[data-slide="moringa"] .featuredPrice {
+  color: #fdfdfc;
+}
+[data-slide="moringa"] .featuredCardLabel {
+  color: #ebf5ea;
+}
+
+/* ── 3. KASHAYA (Light ivory background — deep forest & roasted decoction dark palette) ── */
+[data-slide="kashaya"] .featuredLabel {
+  color: #1f3d2b;
+}
+[data-slide="kashaya"] .featuredName {
+  color: #1a281e;
+}
+[data-slide="kashaya"] .featuredTagline {
+  color: #5c4122;
+}
+[data-slide="kashaya"] .featuredDescription {
+  color: #332921;
+}
+[data-slide="kashaya"] .featuredBenefits {
+  color: #8b571a;
+}
+[data-slide="kashaya"] .featuredWeight {
+  color: #6b5b4f;
+}
+[data-slide="kashaya"] .featuredPrice {
+  color: #1a281e;
+}
+[data-slide="kashaya"] .featuredCardLabel {
+  color: #1a281e;
+}
+
+/* ── 4. MENTHE MUDDE (Warm clay/terracotta background — rich spiced mahogany dark palette) ── */
+[data-slide="menthe-mudde"] .featuredLabel {
+  color: #243828;
+}
+[data-slide="menthe-mudde"] .featuredName {
+  color: #2e160e;
+}
+[data-slide="menthe-mudde"] .featuredTagline {
+  color: #692b16;
+}
+[data-slide="menthe-mudde"] .featuredDescription {
+  color: #3d271e;
+}
+[data-slide="menthe-mudde"] .featuredBenefits {
+  color: #843519;
+}
+[data-slide="menthe-mudde"] .featuredWeight {
+  color: #6e4d40;
+}
+[data-slide="menthe-mudde"] .featuredPrice {
+  color: #2e160e;
+}
+[data-slide="menthe-mudde"] .featuredCardLabel {
+  color: #2e160e;
+}
