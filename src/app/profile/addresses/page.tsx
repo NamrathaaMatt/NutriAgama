@@ -4,7 +4,7 @@ import AddressesView from "@/frontend/components/profile/AddressesView";
 import type { Address } from "@/backend/actions/addresses";
 
 export const metadata = {
-  title: "Your addresses | WIN-DIA Foods",
+  title: "Your addresses | NUTRI-AGMA",
 };
 
 export default async function AddressesPage() {
