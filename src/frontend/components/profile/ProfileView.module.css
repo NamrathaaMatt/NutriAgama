@@ -6,7 +6,7 @@
   width: 100%;
   max-width: 860px;
   margin: 0 auto;
-  padding: var(--space-xl, 2rem) var(--space-md, 1rem);
+  padding: calc(var(--space-xl, 2rem) + 68px) var(--space-md, 1rem) var(--space-xl, 2rem);
 }
 
 .card {
@@ -428,7 +428,7 @@
 
 @media (max-width: 600px) {
   .page {
-    padding: var(--space-md, 1rem) 0.75rem;
+    padding: calc(var(--space-md, 1rem) + 60px) 0.75rem var(--space-md, 1rem);
   }
 
   .banner {
