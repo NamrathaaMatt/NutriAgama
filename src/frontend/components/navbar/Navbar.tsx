@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useRef, useState } from "react";
@@ -5,6 +6,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { House, Info, Mail, Store } from "lucide-react";
+
+import { createClient } from "@/backend/supabase/client";
 
 import cartBlack from "./assets/cartb.png";
 import cartWhite from "./assets/cartw.png";
@@ -53,17 +56,52 @@ export default function Navbar({
 }: NavbarProps) {
   const navbarRef = useRef<HTMLElement>(null);
   const pathname = usePathname();
-  const [contrastTone, setContrastTone] = useState<NavbarIconTone>(textTone);
 
+  const [contrastTone, setContrastTone] =
+    useState<NavbarIconTone>(textTone);
+
+  // Authentication state
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  // Check Supabase authentication state
+  useEffect(() => {
+    const supabase = createClient();
+
+    const checkUser = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      setIsLoggedIn(!!user);
+    };
+
+    checkUser();
+
+    // Keep Navbar updated when login/logout happens
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsLoggedIn(!!session?.user);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  // Navbar contrast logic
   useEffect(() => {
     if (!fixed || !autoContrast) return;
 
     const updateContrast = () => {
-      const navbarHeight = navbarRef.current?.getBoundingClientRect().height ?? 88;
+      const navbarHeight =
+        navbarRef.current?.getBoundingClientRect().height ?? 88;
+
       const pageElement = document.elementFromPoint(
         window.innerWidth / 2,
         Math.min(window.innerHeight - 1, navbarHeight + 16),
       );
+
       const tone = pageElement
         ?.closest<HTMLElement>("[data-navbar-tone]")
         ?.dataset.navbarTone;
@@ -72,7 +110,11 @@ export default function Navbar({
     };
 
     updateContrast();
-    window.addEventListener("scroll", updateContrast, { passive: true });
+
+    window.addEventListener("scroll", updateContrast, {
+      passive: true,
+    });
+
     window.addEventListener("resize", updateContrast);
 
     return () => {
@@ -83,15 +125,31 @@ export default function Navbar({
 
   const resolvedTextTone = autoContrast ? contrastTone : textTone;
   const resolvedIconTone = autoContrast ? contrastTone : iconTone;
+
   const icons = actionIcons[resolvedIconTone];
-  const textToneClass = resolvedTextTone === "white" ? styles.textWhite : "";
+
+  const textToneClass =
+    resolvedTextTone === "white" ? styles.textWhite : "";
+
+  // Decide where the profile icon should go
+  const profileHref = isLoggedIn ? "/profile" : "/login";
 
   return (
     <header
       ref={navbarRef}
+
+      className={`${styles.navbar} ${textToneClass} ${
+        fixed ? styles.fixed : ""
+      }`}
+
       className={`${styles.navbar} ${textToneClass} ${fixed ? styles.fixed : ""} ${opaque ? styles.opaque : ""}`}
+
     >
-      <Link href="/" className={styles.brand} aria-label="Agama Siri Nutri home">
+      <Link
+        href="/"
+        className={styles.brand}
+        aria-label="Agama Siri Nutri home"
+      >
         <Image
           src={logo}
           alt="Agama Siri Nutri"
@@ -100,14 +158,20 @@ export default function Navbar({
         />
       </Link>
 
-      <nav className={styles.links} aria-label="Primary navigation">
+      <nav
+        className={styles.links}
+        aria-label="Primary navigation"
+      >
         {primaryNavigation.map((item) => {
           const isActive = pathname === item.href;
+
           return (
             <Link
               key={item.href}
               href={item.href}
-              className={`${styles.link} ${isActive ? styles.linkActive : ""}`}
+              className={`${styles.link} ${
+                isActive ? styles.linkActive : ""
+              }`}
               aria-current={isActive ? "page" : undefined}
             >
               {item.label}
@@ -116,34 +180,70 @@ export default function Navbar({
         })}
       </nav>
 
-      <nav className={styles.mobileLinks} aria-label="Mobile primary navigation">
+      <nav
+        className={styles.mobileLinks}
+        aria-label="Mobile primary navigation"
+      >
         {mobileNavigation.map(({ href, label, Icon }) => {
           const isActive = pathname === href;
+
           return (
             <Link
               key={href}
               href={href}
-              className={`${styles.mobileLink} ${isActive ? styles.mobileLinkActive : ""}`}
+              className={`${styles.mobileLink} ${
+                isActive ? styles.mobileLinkActive : ""
+              }`}
               aria-label={label}
               aria-current={isActive ? "page" : undefined}
             >
-              <Icon className={styles.mobileIcon} aria-hidden="true" />
+              <Icon
+                className={styles.mobileIcon}
+                aria-hidden="true"
+              />
             </Link>
           );
         })}
       </nav>
 
       <div className={styles.actions}>
-        <Link href="/wishlist" className={styles.action} aria-label="Wishlist">
-          <Image src={icons.wishlist} alt="" className={styles.icon} />
+        <Link
+          href="/wishlist"
+          className={styles.action}
+          aria-label="Wishlist"
+        >
+          <Image
+            src={icons.wishlist}
+            alt=""
+            className={styles.icon}
+          />
         </Link>
-        <Link href="/cart" className={styles.action} aria-label="Cart">
-          <Image src={icons.cart} alt="" className={styles.icon} />
+
+        <Link
+          href="/cart"
+          className={styles.action}
+          aria-label="Cart"
+        >
+          <Image
+            src={icons.cart}
+            alt=""
+            className={styles.icon}
+          />
         </Link>
-        <Link href="/login" className={styles.action} aria-label="Account">
-          <Image src={icons.profile} alt="" className={styles.icon} />
+
+        <Link
+          href={profileHref}
+          className={styles.action}
+          aria-label="Account"
+        >
+          <Image
+            src={icons.profile}
+            alt=""
+            className={styles.icon}
+          />
         </Link>
       </div>
     </header>
   );
 }
+
