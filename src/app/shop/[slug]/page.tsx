@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useProducts } from "@/frontend/hooks/use-products";
 import { useWishlist } from "@/frontend/hooks/use-wishlist";
 import { useCart } from "@/frontend/hooks/use-cart";
+import Navbar from "@/frontend/components/navbar/Navbar";
 import "@/frontend/styles/shop.css";
 import { Heart } from "lucide-react";
 
@@ -195,6 +196,7 @@ export default function ProductPage({ params }: ProductPageProps) {
 
   return (
     <div className="page">
+      <Navbar textTone="black" iconTone="black" fixed={true} autoContrast />
       <Link href="/shop" className="backToShop">
         <span aria-hidden="true">←</span> Back to Shop
       </Link>
