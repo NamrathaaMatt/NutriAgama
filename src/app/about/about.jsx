@@ -457,49 +457,6 @@ export default function AboutUs() {
           </div>
         </div>
       </section>
-
-      {/* ── FOOTER ───────────────────────────────────────── */}
-      <footer className="about-footer" data-navbar-tone="white">
-        <div className="about-container">
-          <div className="about-footer__inner">
-            <div className="about-footer__brand">
-              <h3 className="about-footer__logo">Nutri Agama</h3>
-              <p className="about-footer__tagline">Ancient Nutrition for Modern Life</p>
-              <div className="about-footer__social">
-                <a href="#" aria-label="Instagram"><FiInstagram size={18} /></a>
-                <a href="#" aria-label="Facebook"><FiFacebook size={18} /></a>
-                <a href="#" aria-label="Twitter"><FiTwitter size={18} /></a>
-              </div>
-            </div>
-            <div className="about-footer__links">
-              <h4>Explore</h4>
-              <a href="/shop">Shop</a>
-              <a href="/about-us">About Us</a>
-              <a href="/health-benefits">Health Benefits</a>
-              <a href="/contact-us">Contact Us</a>
-            </div>
-            <div className="about-footer__links">
-              <h4>Products</h4>
-              <a href="/shop">Protein Powder</a>
-              <a href="/shop">Kashaya Powder</a>
-              <a href="/shop">Moringa Leaf Soup</a>
-              <a href="/shop">Methi Balls</a>
-            </div>
-            <div className="about-footer__contact">
-              <h4>Get In Touch</h4>
-              <p>aruyaagamasirinutri55@gmail.com</p>
-              <p>+91 80731 40054</p>
-              <p>+91 90365 72176</p>
-              <a href="/contact-us" className="about-footer__contact-btn">Contact Us</a>
-            </div>
-          </div>
-          <div className="about-footer__bottom">
-            <p>© {new Date().getFullYear()} Aruya Agama Siri Nutri. All rights reserved.</p>
-            <p>Made with intention and real ingredients.</p>
-          </div>
-        </div>
-      </footer>
-
     </div>
   );
 }
