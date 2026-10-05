@@ -32,7 +32,9 @@ export function RecipeCard({ r }) {
     <article className={s.rcard}>
       <div className={s.rtop}>
         <span className={s.badge}>{r.cat}</span>
-        <img src={r.product.img} alt={r.product.name} loading="lazy" />
+        <div className={s.dish} aria-hidden="true">
+          <Dish kind={r.art} />
+        </div>
       </div>
       <div className={s.rbody}>
         <h3>{r.title}</h3>
