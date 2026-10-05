@@ -50,10 +50,10 @@ export default function HealthBenefitsPage() {
 
   return (
     <>
-      <Navbar textTone="white" iconTone="white" fixed={true} />
+      <Navbar textTone="black" iconTone="black" fixed autoContrast />
       <main className={`${s.page} ${fontVars}`} style={{ paddingTop: '0' }}>
       {/* HERO */}
-      <section className={`${s.hero} ${s.grain}`}>
+      <section className={`${s.hero} ${s.grain}`} data-navbar-tone="white">
         <div className={s.glow} />
         <Branch className={`${s.br} ${s.brL}`} /><Branch className={`${s.br} ${s.brR}`} flip />
         <div className={`${s.inner} ${s.heroGrid}`}>
@@ -89,7 +89,7 @@ export default function HealthBenefitsPage() {
       </section>
 
       {/* PRODUCT SHOWCASE */}
-      <section id="products" className={s.stagewrap} style={{ "--tint": p.tint }}>
+      <section id="products" className={s.stagewrap} style={{ "--tint": p.tint }} data-navbar-tone="black">
         <div className={s.inner}>
           <p className={s.center}><span className={s.spill}><b>0{idx + 1}</b> What&apos;s inside matters</span></p>
           <div key={p.id + "t"} className={s.center} style={{ animation: "fadeup .7s both", marginTop: 22 }}>
@@ -118,7 +118,7 @@ export default function HealthBenefitsPage() {
       </section>
 
       {/* WHY OUR PRODUCTS WORK */}
-      <section className={`${s.section} ${s.why} ${s.grain}`}>
+      <section className={`${s.section} ${s.why} ${s.grain}`} data-navbar-tone="black">
         <div className={s.glow} />
         <Branch className={`${s.br} ${s.brDark} ${s.brR}`} />
         <div className={s.inner}>

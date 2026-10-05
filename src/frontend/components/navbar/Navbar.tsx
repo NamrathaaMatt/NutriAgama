@@ -21,6 +21,7 @@ type NavbarProps = {
   iconTone: NavbarIconTone;
   fixed?: boolean;
   autoContrast?: boolean;
+  opaque?: boolean;
 };
 
 const actionIcons = {
@@ -48,6 +49,7 @@ export default function Navbar({
   iconTone,
   fixed = false,
   autoContrast = false,
+  opaque = false,
 }: NavbarProps) {
   const navbarRef = useRef<HTMLElement>(null);
   const pathname = usePathname();
@@ -87,7 +89,7 @@ export default function Navbar({
   return (
     <header
       ref={navbarRef}
-      className={`${styles.navbar} ${textToneClass} ${fixed ? styles.fixed : ""}`}
+      className={`${styles.navbar} ${textToneClass} ${fixed ? styles.fixed : ""} ${opaque ? styles.opaque : ""}`}
     >
       <Link href="/" className={styles.brand} aria-label="Agama Siri Nutri home">
         <Image

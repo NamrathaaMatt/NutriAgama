@@ -1191,7 +1191,7 @@
   justify-content: space-between;
   gap: 24px;
   margin: 0 auto;
-  padding: 32px 6vw;
+  padding: 100px 6vw 32px;
   background: url("/images/wishlist-hero-bg.jpg") center / cover no-repeat;
   border: none;
   overflow-x: clip;
@@ -1286,6 +1286,7 @@
     flex-direction: column;
     align-items: flex-start;
     text-align: left;
+    padding: 80px 6vw 32px;
   }
 
   .wishlistHeroDecor {
@@ -1302,7 +1303,7 @@
   justify-content: space-between;
   gap: 24px;
   margin: 0 auto;
-  padding: 100px 6vw;
+  padding: 168px 6vw 100px;
   background-image: url("/images/cart-hero.jpg");
   background-size: cover;
   background-position: center;
@@ -1760,6 +1761,7 @@
     flex-direction: column;
     align-items: flex-start;
     text-align: left;
+    padding: 148px 6vw 100px;
   }
 
   .cartHeroDecor {

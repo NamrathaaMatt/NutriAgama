@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useProducts } from "@/frontend/hooks/use-products";
 import { useWishlist } from "@/frontend/hooks/use-wishlist";
 import { useCart } from "@/frontend/hooks/use-cart";
+import Navbar from "@/frontend/components/navbar/Navbar";
 import "@/frontend/styles/shop.css";
 import { Heart } from "lucide-react";
 
@@ -181,6 +182,7 @@ export default function WishlistPage() {
 
   return (
     <div className="page">
+      <Navbar textTone="black" iconTone="black" fixed={true} opaque={true} />
       <div className="wishlistHero">
         <div className="wishlistHeroLeaf" aria-hidden="true">♥</div>
         <div className="wishlistHeroText">
