@@ -1,10 +1,8 @@
 import type { Metadata } from "next";
-import { Caveat, Fraunces, Inter, Oswald } from "next/font/google";
+import { Fraunces, Inter } from "next/font/google";
 import { ToastProvider } from "@/frontend/hooks/use-toast";
-import { ProductsProvider } from "@/frontend/hooks/use-products";
 import { WishlistProvider } from "@/frontend/hooks/use-wishlist";
 import { CartProvider } from "@/frontend/hooks/use-cart";
-import Footer from "@/frontend/home/components/Footer";
 import "./globals.css";
 
 const fraunces = Fraunces({
@@ -13,46 +11,26 @@ const fraunces = Fraunces({
   weight: ["400", "500", "600"],
 });
 
-const caveat = Caveat({
-  subsets: ["latin"],
-  variable: "--font-caveat",
-  weight: ["400", "500"],
-});
-
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-body",
   weight: ["400", "500", "600"],
 });
 
-const oswald = Oswald({
-  subsets: ["latin"],
-  variable: "--font-navbar",
-  weight: ["400", "500"],
-});
-
 export const metadata: Metadata = {
   title: "Nutriagama — Good health, rooted in tradition",
   description:
-    "NutriAgama — traditional Indian wellness, thoughtfully crafted for modern life.",
+    "Everyday nutrition inspired by Karnataka's timeless food wisdom.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html
-      lang="en"
-      className={`${fraunces.variable} ${caveat.variable} ${inter.variable} ${oswald.variable}`}
-    >
+    <html lang="en" className={`${fraunces.variable} ${inter.variable}`}>
       <body>
         <ToastProvider>
-          <ProductsProvider>
-            <WishlistProvider>
-              <CartProvider>
-                {children}
-                <Footer />
-              </CartProvider>
-            </WishlistProvider>
-          </ProductsProvider>
+          <WishlistProvider>
+            <CartProvider>{children}</CartProvider>
+          </WishlistProvider>
         </ToastProvider>
       </body>
     </html>

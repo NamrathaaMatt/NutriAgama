@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect, useRef, useState } from "react";
@@ -131,19 +130,16 @@ export default function Navbar({
   const textToneClass =
     resolvedTextTone === "white" ? styles.textWhite : "";
 
-  // Decide where the profile icon should go
+  // Logged-in users go to profile.
+  // Logged-out users go to login.
   const profileHref = isLoggedIn ? "/profile" : "/login";
 
   return (
     <header
       ref={navbarRef}
-
       className={`${styles.navbar} ${textToneClass} ${
         fixed ? styles.fixed : ""
-      }`}
-
-      className={`${styles.navbar} ${textToneClass} ${fixed ? styles.fixed : ""} ${opaque ? styles.opaque : ""}`}
-
+      } ${opaque ? styles.opaque : ""}`}
     >
       <Link
         href="/"
@@ -246,4 +242,3 @@ export default function Navbar({
     </header>
   );
 }
-
