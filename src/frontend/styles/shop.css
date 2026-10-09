@@ -1,7 +1,12 @@
-/* ---- Shop page: warm cream + olive, photo-forward e-commerce style ---- */
-
 :root {
-  --nav-height: 193px; /* set this to your navbar's real height */
+  --nav-height: 193px; /* used by wishlist + cart heroes */
+  --page-offset: 160px; /* space reserved for the navbar on shop + product pages. Tweak this one. */
+}
+
+@media (max-width: 700px) {
+  :root {
+    --page-offset: 100px; /* mobile navbar height, adjust to match */
+  }
 }
 
 .page {
@@ -29,6 +34,7 @@
   align-items: flex-end;
   justify-content: center;
   min-height: 380px;
+  margin-top: var(--page-offset); /* pushes the hero below the navbar */
   padding: 30px 6vw;
   text-align: center;
   background: linear-gradient(
@@ -635,7 +641,7 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 24px 6vw 0;
+  padding: calc(var(--page-offset) - 50px) 6vw 0;
   font-size: 0.9rem;
   font-weight: 500;
   color: var(--muted);
