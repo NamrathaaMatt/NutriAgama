@@ -1,5 +1,5 @@
 .navbar {
-  position: absolute;
+  position: fixed;
   z-index: 60;
   inset: 0 0 auto;
   width: 100%;
@@ -11,47 +11,74 @@
   align-items: center;
   gap: clamp(24px, 4vw, 70px);
 
+  /* default: transparent, text uses prop color */
   color: #171411;
-  transition: color 260ms ease;
+  background: transparent;
+
+  transition:
+    color 260ms ease,
+    background 320ms ease,
+    min-height 320ms ease,
+    padding 320ms ease,
+    box-shadow 320ms ease;
 }
 
+/* ── prop-driven tone (only active when NOT scrolled and NOT alwaysOpaque) ── */
 .textWhite {
   color: #fff;
 }
 
-.fixed {
-  position: fixed;
-  background: transparent !important;
-  box-shadow: none !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
+/* ── Dark brown bar — shown on scroll OR alwaysOpaque pages ─────────────── */
+.darkBar {
+  background: rgba(36, 20, 13, 0.98);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  color: #f7f3ee !important; /* milky white — overrides any dark default */
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
-.opaque {
-  background: rgba(251, 247, 240, 0.95) !important;
-  box-shadow: 0 1px 3px rgba(23, 20, 17, 0.06) !important;
-  backdrop-filter: blur(8px) !important;
-  -webkit-backdrop-filter: blur(8px) !important;
-  border-bottom: 1px solid rgba(236, 232, 221, 0.6) !important;
-  min-height: 68px !important;
-  padding: 3px clamp(30px, 2.5vw, 42px) 0 !important;
+/* ── Compact header once scrolled ───────────────────────────────────────── */
+.scrolled {
+  min-height: 62px;
+  height: 62px;
+  padding: 0 clamp(30px, 2.5vw, 42px);
 }
 
-.opaque .brand {
-  transform: translateY(-10px) !important;
+.scrolled .logo {
+  width: 52px !important;
+  height: 52px !important;
+  max-width: 52px !important;
+  max-height: 52px !important;
+  object-fit: contain;
 }
 
-.opaque .logo {
-  width: clamp(110px, 10vw, 160px) !important;
+.scrolled .brand {
+  transform: none;
+  line-height: 0;
 }
 
-.opaque .links {
-  top: 50px !important;
+.scrolled .links {
+  top: 50%;
+  transform: translate(-50%, -50%);
+  gap: clamp(48px, 5vw, 84px);
 }
 
-.opaque .actions {
-  top: 52px !important;
+.scrolled .link {
+  font-size: clamp(17px, 1.3vw, 22px);
 }
+
+.scrolled .actions {
+  top: 50%;
+  transform: translateY(-50%);
+  gap: clamp(20px, 2.2vw, 36px);
+}
+
+.scrolled .action {
+  width: 24px;
+  height: 24px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────── */
 
 .brand {
   display: inline-flex;
@@ -59,12 +86,15 @@
   width: fit-content;
   border-radius: 8px;
   transform: translateY(-18px);
+  transition: transform 320ms ease;
 }
 
 .logo {
   width: clamp(130px, 11.5vw, 190px);
   height: auto;
+  max-height: 190px;
   display: block;
+  transition: width 320ms ease, height 320ms ease, max-height 320ms ease, transform 320ms ease;
 }
 
 .links,
@@ -84,6 +114,7 @@
   transform: translateX(-50%);
   justify-content: center;
   gap: clamp(90px, 7.8vw, 130px);
+  transition: top 320ms ease;
 }
 
 .link {
@@ -99,7 +130,7 @@
   transition: opacity 180ms ease, transform 180ms ease;
 }
 
-/* Active page indicator - minimal line below */
+/* Active page indicator */
 .linkActive::after {
   content: "";
   position: absolute;
@@ -118,6 +149,7 @@
   right: clamp(60px, 5.6vw, 93px);
   justify-content: flex-end;
   gap: clamp(28px, 4vw, 66px);
+  transition: top 320ms ease;
 }
 
 .action {
@@ -157,13 +189,26 @@
     gap: 24px;
   }
 
-  .opaque {
-    min-height: 60px !important;
-    padding: 3px 24px 0 !important;
+  .scrolled {
+    min-height: 54px;
+    height: 54px;
+    padding: 0 20px;
   }
 
-  .opaque .logo {
-    width: 100px !important;
+  .scrolled .logo {
+    width: 44px !important;
+    height: 44px !important;
+    max-width: 44px !important;
+    max-height: 44px !important;
+  }
+
+  .scrolled .actions {
+    gap: 16px;
+  }
+
+  .scrolled .action {
+    width: 22px;
+    height: 22px;
   }
 
   .logo {
@@ -183,7 +228,6 @@
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     justify-items: center;
-    /* max() ensures glass is tall enough even when safe-area-inset-bottom = 0 */
     padding: 10px 24px max(env(safe-area-inset-bottom, 0px), 20px);
     color: var(--color-deep-green);
     background:
@@ -200,8 +244,6 @@
       0 -8px 32px rgba(31, 61, 43, 0.08);
   }
 
-  /* bleeds the same glass fill below the element so it always
-     reaches the absolute screen bottom on any device/browser */
   .mobileLinks::after {
     content: "";
     position: absolute;
@@ -220,7 +262,6 @@
     color: var(--color-deep-green);
   }
 
-  /* Active indicator for mobile - small dot above icon */
   .mobileLinkActive::before {
     content: "";
     position: absolute;
@@ -261,6 +302,19 @@
     gap: 14px;
   }
 
+  .scrolled {
+    min-height: 48px;
+    height: 48px;
+    padding: 0 14px;
+  }
+
+  .scrolled .logo {
+    width: 38px !important;
+    height: 38px !important;
+    max-width: 38px !important;
+    max-height: 38px !important;
+  }
+
   .logo {
     width: 96px;
   }
@@ -276,5 +330,15 @@
 
   .mobileLinks {
     padding: 6px 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .navbar,
+  .brand,
+  .logo,
+  .links,
+  .actions {
+    transition: none;
   }
 }
