@@ -54,20 +54,9 @@ export default function Navbar({
   const navbarRef = useRef<HTMLElement>(null);
   const pathname = usePathname();
   const [contrastTone, setContrastTone] = useState<NavbarIconTone>(textTone);
-  const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 60);
-    };
-
-    handleScroll();
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  useEffect(() => {
-    if (!fixed || !autoContrast || isScrolled) return;
+    if (!fixed || !autoContrast) return;
 
     const updateContrast = () => {
       const navbarHeight = navbarRef.current?.getBoundingClientRect().height ?? 88;
@@ -90,19 +79,17 @@ export default function Navbar({
       window.removeEventListener("scroll", updateContrast);
       window.removeEventListener("resize", updateContrast);
     };
-  }, [autoContrast, fixed, isScrolled]);
+  }, [autoContrast, fixed]);
 
-  const isDark = isScrolled || opaque;
-  const isCompact = isScrolled || opaque;
-  const resolvedTextTone = isDark ? "white" : (autoContrast ? contrastTone : textTone);
-  const resolvedIconTone = isDark ? "white" : (autoContrast ? contrastTone : iconTone);
+  const resolvedTextTone = autoContrast ? contrastTone : textTone;
+  const resolvedIconTone = autoContrast ? contrastTone : iconTone;
   const icons = actionIcons[resolvedIconTone];
   const textToneClass = resolvedTextTone === "white" ? styles.textWhite : "";
 
   return (
     <header
       ref={navbarRef}
-      className={`${styles.navbar} ${textToneClass} ${isDark ? styles.darkBar : ""} ${isCompact ? styles.scrolled : ""}`}
+      className={`${styles.navbar} ${textToneClass} ${fixed ? styles.fixed : ""} ${opaque ? styles.opaque : ""}`}
     >
       <Link href="/" className={styles.brand} aria-label="Agama Siri Nutri home">
         <Image
