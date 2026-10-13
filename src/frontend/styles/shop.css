@@ -1,4 +1,13 @@
-/* ---- Shop page: warm cream + olive, photo-forward e-commerce style ---- */
+:root {
+  --nav-height: 193px; /* used by wishlist + cart heroes */
+  --page-offset: 160px; /* space reserved for the navbar on shop + product pages. Tweak this one. */
+}
+
+@media (max-width: 700px) {
+  :root {
+    --page-offset: 100px; /* mobile navbar height, adjust to match */
+  }
+}
 
 .page {
   --cream: #faf8f2;
@@ -25,6 +34,7 @@
   align-items: flex-end;
   justify-content: center;
   min-height: 380px;
+  margin-top: var(--page-offset); /* pushes the hero below the navbar */
   padding: 30px 6vw;
   text-align: center;
   background: linear-gradient(
@@ -631,7 +641,7 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 24px 6vw 0;
+  padding: calc(var(--page-offset) - 50px) 6vw 0;
   font-size: 0.9rem;
   font-weight: 500;
   color: var(--muted);
@@ -1191,7 +1201,7 @@
   justify-content: space-between;
   gap: 24px;
   margin: 0 auto;
-  padding: 100px 6vw 32px;
+  padding: calc(var(--nav-height) + 32px) 6vw 72px;
   background: url("/images/wishlist-hero-bg.jpg") center / cover no-repeat;
   border: none;
   overflow-x: clip;
@@ -1302,11 +1312,12 @@
   align-items: center;
   justify-content: space-between;
   gap: 24px;
-  margin: 0 auto;
-  padding: 168px 6vw 100px;
+  margin: 135px auto 0;
+  padding: 100px 6vw 110px;
+  min-height: 360px;
   background-image: url("/images/cart-hero.jpg");
   background-size: cover;
-  background-position: center;
+  background-position: center 65%;
   border: none;
   overflow-x: clip;
 }

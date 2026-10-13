@@ -3,7 +3,7 @@ import { createClient } from "@/backend/supabase/server";
 import ProfileView from "@/frontend/components/profile/ProfileView";
 
 export const metadata = {
-  title: "Your profile | WIN-DIA Foods",
+  title: "Your profile | NUTRI-AGMAs",
 };
 
 export default async function ProfilePage() {
@@ -14,9 +14,11 @@ export default async function ProfilePage() {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect("/login");
-  }
+  console.log("No authenticated user found on the server");
+  redirect("/login");
+}
 
+console.log("Authenticated user:", user.email);
   const meta = user.user_metadata ?? {};
 
   const { count: addressCount } = await supabase
