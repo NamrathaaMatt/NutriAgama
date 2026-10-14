@@ -1,13 +1,18 @@
 :root {
-  --nav-height: 193px; /* used by wishlist + cart heroes */
-  --page-offset: 160px; /* space reserved for the navbar on shop + product pages. Tweak this one. */
+  --nav-height: 0px; /* replace with your measured desktop navbar height */
+  --page-offset: var(--nav-height);
+  --slug-offset: 200px;
 }
 
 @media (max-width: 700px) {
   :root {
-    --page-offset: 100px; /* mobile navbar height, adjust to match */
+    --nav-height: 80px; /* replace with your measured mobile navbar height */
+    --slug-offset: 100px;
   }
 }
+
+
+
 
 .page {
   --cream: #faf8f2;
@@ -33,7 +38,7 @@
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  min-height: 380px;
+  min-height: clamp(420px, 38vw, 720px);  /* was 380px */
   margin-top: var(--page-offset); /* pushes the hero below the navbar */
   padding: 30px 6vw;
   text-align: center;
@@ -641,7 +646,7 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: calc(var(--page-offset) - 50px) 6vw 0;
+  padding: calc(var(--slug-offset) - 50px) 6vw 0;
   font-size: 0.9rem;
   font-weight: 500;
   color: var(--muted);
@@ -1195,6 +1200,7 @@
 /* ---- Wishlist hero ---- */
 
 .wishlistHero {
+  min-height: 350px;
   position: relative;
   display: flex;
   align-items: center;
@@ -1312,8 +1318,8 @@
   align-items: center;
   justify-content: space-between;
   gap: 24px;
-  margin: 135px auto 0;
-  padding: 100px 6vw 110px;
+  margin: 0 auto;
+  padding: calc(var(--nav-height) + 32px) 6vw 110px;
   min-height: 360px;
   background-image: url("/images/cart-hero.jpg");
   background-size: cover;
@@ -1757,6 +1763,14 @@
   color: var(--ink);
 }
 
+@media (max-width: 700px) {
+  .cartHero {
+    background-image: url("/images/cart-hero-mobile.jpg");
+    background-position: center;
+    /* ...keep your existing flex-direction, align-items, text-align and padding here... */
+  }
+}
+
 @media (max-width: 800px) {
   .cartLayout {
     grid-template-columns: 1fr;
@@ -1772,7 +1786,7 @@
     flex-direction: column;
     align-items: flex-start;
     text-align: left;
-    padding: 148px 6vw 100px;
+    padding: calc(var(--nav-height) + 24px) 6vw 100px;
   }
 
   .cartHeroDecor {
@@ -1798,6 +1812,37 @@
 
   .cartSuggestionsGrid {
     grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  .cartHero {
+    background-image: url("/images/cart-hero-mobile.jpg");
+    background-size: cover;
+    background-position: center bottom;  /* extra height goes to the top */
+    min-height: 460px;                   /* taller, so there's room above the bags */
+
+    flex-direction: column;
+    justify-content: flex-start;         /* title stays at the top */
+    align-items: flex-start;   /* was center: pins the title to the left */
+    text-align: left;      
+    padding: 40px 2vw 100px;            /* fixed top gap to clear the navbar */
+  }
+
+  .cartHeroText {
+    flex: 0 0 auto;   /* stops it stretching and drifting to the middle */
+    min-width: 0;
+  }
+
+  .cartHeroTitle {
+    font-family: var(--font-caveat), "Brush Script MT", cursive;
+    font-size: 2.6rem;
+    margin: 0;
+    text-shadow: 0 2px 14px rgba(0, 0, 0, 0.7), 0 1px 3px rgba(0, 0, 0, 0.5);
+  }
+
+  .cartHeroDecor {
+    display: none;
   }
 }
 
