@@ -143,7 +143,7 @@ export default function AboutUs() {
       setTyped(c);
       if (c >= full) clearInterval(iv);
     }, 32);
-    const next = setTimeout(() => setTruth((t) => (t + 1) % beliefs.length), 5000);
+    const next = setTimeout(() => setTruth((t) => (t + 1) % beliefs.length), 10000);
     return () => { clearInterval(iv); clearTimeout(next); };
   }, [truth, beliefsActive]);
 
