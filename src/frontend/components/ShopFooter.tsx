@@ -1,6 +1,6 @@
 export default function PromoBanner() {
   return (
-    <section className="promoBanner">
+    <section className="promoBanner" data-navbar-tone="white">
       <div className="promoContent">
         <h2 className="promoTitle">Ancient Nutrition for Modern Life</h2>
         <ul className="promoFeatures">

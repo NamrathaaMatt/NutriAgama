@@ -1,6 +1,8 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/backend/supabase/client";
 import { useToast } from "./use-toast";
 
 type CartItem = {
@@ -24,18 +26,112 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [loaded, setLoaded] = useState(false);
   const { showToast } = useToast();
+  const router = useRouter();
+  const supabase = createClient();
 
   useEffect(() => {
-    const saved = localStorage.getItem("cart");
-    if (saved) setItems(JSON.parse(saved));
-    setLoaded(true);
+    let active = true;
+
+    async function loadCart() {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) {
+        if (active) {
+          setItems([]);
+          setLoaded(true);
+        }
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from("cart_items")
+        .select("quantity, products(slug)")
+        .eq("user_id", user.id);
+
+      if (!active) return;
+
+      if (error) {
+        console.error("Load cart error:", error.message);
+        setLoaded(true);
+        return;
+      }
+
+      const loadedItems = (data ?? [])
+        .filter((row: any) => row.products?.slug)
+        .map((row: any) => ({ slug: row.products.slug, quantity: row.quantity }));
+
+      setItems(loadedItems);
+      setLoaded(true);
+    }
+
+    loadCart();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(() => {
+      loadCart();
+    });
+
+    return () => {
+      active = false;
+      subscription.unsubscribe();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    if (loaded) localStorage.setItem("cart", JSON.stringify(items));
-  }, [items, loaded]);
+  const addToCart = async (slug: string, quantity: number = 1) => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-  const addToCart = (slug: string, quantity: number = 1) => {
+    if (!user) {
+      router.push("/login");
+      return;
+    }
+
+    const { data: product, error: productError } = await supabase
+      .from("products")
+      .select("id")
+      .eq("slug", slug)
+      .single();
+
+    if (productError || !product) {
+      console.error("Product lookup failed:", productError?.message);
+      return;
+    }
+
+    const { data: existing } = await supabase
+      .from("cart_items")
+      .select("id, quantity")
+      .eq("user_id", user.id)
+      .eq("product_id", product.id)
+      .maybeSingle();
+
+    if (existing) {
+      const { error } = await supabase
+        .from("cart_items")
+        .update({ quantity: existing.quantity + quantity })
+        .eq("id", existing.id);
+
+      if (error) {
+        console.error("Update cart error:", error.message);
+        return;
+      }
+    } else {
+      const { error } = await supabase.from("cart_items").insert({
+        user_id: user.id,
+        product_id: product.id,
+        quantity,
+      });
+
+      if (error) {
+        console.error("Insert cart error:", error.message);
+        return;
+      }
+    }
+
     setItems((current) => {
       const next = [...current];
       const index = next.findIndex((i) => i.slug === slug);
@@ -49,9 +145,42 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     showToast("Item added to cart!");
   };
 
-  const updateQuantity = (slug: string, quantity: number) => {
+  const updateQuantity = async (slug: string, quantity: number) => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      router.push("/login");
+      return;
+    }
+
+    const { data: product } = await supabase
+      .from("products")
+      .select("id")
+      .eq("slug", slug)
+      .single();
+
+    if (!product) return;
+
+    if (quantity < 1) {
+      await supabase
+        .from("cart_items")
+        .delete()
+        .eq("user_id", user.id)
+        .eq("product_id", product.id);
+
+      setItems((current) => current.filter((i) => i.slug !== slug));
+      return;
+    }
+
+    await supabase
+      .from("cart_items")
+      .update({ quantity })
+      .eq("user_id", user.id)
+      .eq("product_id", product.id);
+
     setItems((current) => {
-      if (quantity < 1) return current.filter((i) => i.slug !== slug);
       const next = [...current];
       const index = next.findIndex((i) => i.slug === slug);
       if (index !== -1) next[index] = { slug, quantity };
@@ -59,11 +188,40 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     });
   };
 
-  const removeFromCart = (slug: string) => {
+  const removeFromCart = async (slug: string) => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) return;
+
+    const { data: product } = await supabase
+      .from("products")
+      .select("id")
+      .eq("slug", slug)
+      .single();
+
+    if (!product) return;
+
+    await supabase
+      .from("cart_items")
+      .delete()
+      .eq("user_id", user.id)
+      .eq("product_id", product.id);
+
     setItems((current) => current.filter((i) => i.slug !== slug));
   };
 
-  const clearCart = () => setItems([]);
+  const clearCart = async () => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) return;
+
+    await supabase.from("cart_items").delete().eq("user_id", user.id);
+    setItems([]);
+  };
 
   const totalItems = items.reduce((sum, i) => sum + i.quantity, 0);
 

@@ -29,8 +29,9 @@ export default function LoginForm() {
       return;
     }
 
-    router.push("/profile");
+    // Refresh to get the new session, then redirect
     router.refresh();
+    router.push("/profile");
   }
 
   

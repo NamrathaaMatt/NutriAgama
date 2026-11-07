@@ -1,0 +1,349 @@
+.section {
+  position: relative;
+  width: 100%;
+  min-height: 100svh;
+  overflow: hidden;
+
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+/* =========================================================
+   MAIN CONTENT
+   ========================================================= */
+
+.content {
+  position: absolute;
+
+  top: 16%;
+  left: 6%;
+
+  width: 48%;
+
+  color: #294229;
+}
+
+.eyebrow {
+  margin: 0 0 25px;
+
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+
+  letter-spacing: 0.42em;
+
+  color: #294229;
+}
+
+.title {
+  margin: 0;
+
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(58px, 5.25vw, 88px);
+  font-weight: 500;
+  line-height: 0.98;
+  letter-spacing: -0.045em;
+
+  color: #294229;
+}
+
+.description {
+  margin: 30px 0 34px;
+
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: clamp(17px, 1.35vw, 22px);
+  font-weight: 400;
+  line-height: 1.5;
+
+  color: #3e503c;
+}
+
+.cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 430px;
+  max-width: 100%;
+  min-height: 62px;
+
+  padding: 0 28px;
+
+  border-radius: 999px;
+
+  background: #294b29;
+  color: #f5e5c5;
+
+  text-decoration: none;
+
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1;
+
+  letter-spacing: 0.24em;
+
+  transition:
+    transform 180ms ease,
+    background-color 180ms ease;
+}
+
+.cta:hover {
+  transform: translateY(-2px);
+  background: #203d22;
+}
+
+.arrow {
+  margin-left: 16px;
+
+  font-size: 21px;
+  line-height: 1;
+  letter-spacing: 0;
+}
+
+/* =========================================================
+   BOTTOM BENEFITS
+   ========================================================= */
+
+.benefits {
+  position: absolute;
+
+  left: 6%;
+  bottom: 8%;
+
+  width: 72%;
+
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 1px minmax(0, 1fr) 1px minmax(0, 1fr);
+
+  align-items: center;
+
+  padding: 16px 26px;
+
+  box-sizing: border-box;
+
+  border-radius: 20px;
+
+  /* Translucent cream/white glass layer */
+  background: rgba(255, 248, 232, 0.28);
+
+  border: 1px solid rgba(255, 255, 255, 0.22);
+
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.benefit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 18px;
+
+  color: #294229;
+
+  min-width: 0;
+}
+
+.icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex: 0 0 58px;
+
+  width: 58px;
+  height: 58px;
+
+  border: 1.5px solid #294229;
+  border-radius: 50%;
+
+  box-sizing: border-box;
+}
+
+.icon svg {
+  width: 34px;
+  height: 34px;
+
+  fill: none;
+
+  stroke: #294229;
+  stroke-width: 1.35;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.benefit h3 {
+  margin: 0;
+
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.15;
+
+  letter-spacing: 0.2em;
+
+  color: #294229;
+}
+
+.benefit p {
+  margin: 8px 0 0;
+
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.4;
+
+  color: #4c5946;
+}
+
+.divider {
+  width: 1px;
+  height: 58px;
+
+  justify-self: center;
+
+  background: rgba(41, 66, 41, 0.45);
+}
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 1100px) {
+  .content {
+    left: 5%;
+    width: 52%;
+  }
+
+  .title {
+    font-size: clamp(52px, 6vw, 74px);
+  }
+
+  .benefits {
+    left: 5%;
+    width: 78%;
+
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .benefit {
+    gap: 14px;
+  }
+
+  .divider {
+    height: 56px;
+  }
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 768px) {
+  .section {
+    min-height: 100svh;
+
+    background-position: center;
+  }
+
+  .content {
+    position: relative;
+
+    top: auto;
+    left: auto;
+
+    width: auto;
+
+    padding: 12vh 7% 0;
+  }
+
+  .eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.32em;
+  }
+
+  .title {
+    font-size: clamp(44px, 11vw, 68px);
+    letter-spacing: -0.035em;
+  }
+
+  .description {
+    font-size: 16px;
+  }
+
+  .description br {
+    display: none;
+  }
+
+  .cta {
+    width: 100%;
+    min-height: 58px;
+
+    font-size: 11px;
+    letter-spacing: 0.18em;
+  }
+
+  .benefits {
+    position: relative;
+
+    left: auto;
+    bottom: auto;
+
+    width: auto;
+
+    margin: 55px 7% 0;
+
+    padding: 22px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+
+    gap: 22px;
+  }
+
+  .divider {
+    width: 100%;
+    height: 1px;
+
+    background: rgba(41, 66, 41, 0.35);
+  }
+}
+
+/* =========================================================
+   SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 480px) {
+  .content {
+    padding-top: 10vh;
+  }
+
+  .title {
+    font-size: 45px;
+  }
+
+  .benefit {
+    gap: 16px;
+  }
+
+  .icon {
+    flex-basis: 52px;
+
+    width: 52px;
+    height: 52px;
+  }
+
+  .benefit h3 {
+    font-size: 12px;
+    letter-spacing: 0.18em;
+  }
+
+  .benefit p {
+    font-size: 13px;
+  }
+}

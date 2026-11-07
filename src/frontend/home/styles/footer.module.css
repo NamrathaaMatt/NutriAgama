@@ -1,0 +1,549 @@
+/* =========================================================
+   FOOTER
+   ========================================================= */
+
+.footer {
+  position: relative;
+
+  width: 100%;
+
+  overflow: hidden;
+
+  background-color: #183d2c;
+
+  color: #e6eadb;
+
+  isolation: isolate;
+}
+
+
+/* =========================================================
+   BACKGROUND
+   ========================================================= */
+
+.background {
+  position: absolute;
+
+  inset: 0;
+
+  z-index: -1;
+
+  background-image: url("../assets/backgrounds/bgfooter.png");
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+
+  pointer-events: none;
+}
+
+
+/* =========================================================
+   MAIN CONTENT
+   ========================================================= */
+
+.inner {
+  position: relative;
+
+  z-index: 1;
+
+  width: min(1180px, calc(100% - 80px));
+
+  margin: 0 auto;
+
+  padding: 78px 0 64px;
+
+  display: grid;
+
+  grid-template-columns:
+    1.25fr
+    0.8fr
+    0.95fr
+    1.55fr;
+
+  column-gap: 72px;
+
+  align-items: start;
+}
+
+
+/* =========================================================
+   BRAND
+   ========================================================= */
+
+.brandColumn {
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: flex-start;
+}
+
+.logo {
+  display: block;
+
+  width: 78px;
+  height: auto;
+
+  object-fit: contain;
+}
+
+.tagline {
+  margin: 14px 0 0;
+
+  color: #d2ddc2;
+
+  font-family: var(--font-body), sans-serif;
+
+  font-size: 13px;
+
+  font-weight: 400;
+
+  font-style: italic;
+
+  line-height: 1.5;
+
+  opacity: 0.9;
+}
+
+
+/* =========================================================
+   SOCIALS
+   ========================================================= */
+
+.socials {
+  display: flex;
+
+  align-items: center;
+
+  gap: 18px;
+
+  margin-top: 27px;
+}
+
+.socials a {
+  color: #cbd7bc;
+
+  font-family: var(--font-body), sans-serif;
+
+  font-size: 10px;
+
+  font-weight: 500;
+
+  letter-spacing: 0.04em;
+
+  text-decoration: none;
+
+  opacity: 0.78;
+
+  transition:
+    color 180ms ease,
+    opacity 180ms ease;
+}
+
+.socials a:hover {
+  color: #f0f2e7;
+
+  opacity: 1;
+}
+
+
+/* =========================================================
+   STANDARD COLUMNS
+   ========================================================= */
+
+.column {
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: flex-start;
+
+  gap: 13px;
+}
+
+.heading {
+  display: block;
+
+  margin-bottom: 9px;
+
+  color: #b9c99a;
+
+  font-family: var(--font-body), sans-serif;
+
+  font-size: 9px;
+
+  font-weight: 600;
+
+  letter-spacing: 0.2em;
+
+  line-height: 1.2;
+}
+
+.column a {
+  color: #d5ddc8;
+
+  font-family: var(--font-body), sans-serif;
+
+  font-size: 12px;
+
+  font-weight: 400;
+
+  line-height: 1.45;
+
+  text-decoration: none;
+
+  opacity: 0.82;
+
+  transition:
+    color 180ms ease,
+    opacity 180ms ease,
+    transform 180ms ease;
+}
+
+.column a:hover {
+  color: #f0f2e7;
+
+  opacity: 1;
+
+  transform: translateX(3px);
+}
+
+
+/* =========================================================
+   CONTACT COLUMN
+   ========================================================= */
+
+.contactColumn {
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: flex-start;
+}
+
+.contactBlock {
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: flex-start;
+
+  margin-bottom: 25px;
+}
+
+.contactBlock:last-child {
+  margin-bottom: 0;
+}
+
+.contactLabel {
+  display: block;
+
+  margin-bottom: 9px;
+
+  color: #b9c99a;
+
+  font-family: var(--font-body), sans-serif;
+
+  font-size: 9px;
+
+  font-weight: 600;
+
+  letter-spacing: 0.18em;
+
+  line-height: 1.3;
+}
+
+
+/* =========================================================
+   ADDRESS
+   ========================================================= */
+
+.address {
+  margin: 0;
+
+  color: #d5ddc8;
+
+  font-family: var(--font-body), sans-serif;
+
+  font-size: 12px;
+
+  font-style: normal;
+
+  font-weight: 400;
+
+  line-height: 1.65;
+
+  opacity: 0.84;
+}
+
+
+/* =========================================================
+   SUPPORT HOURS
+   ========================================================= */
+
+.contactText {
+  margin: 0;
+
+  color: #d5ddc8;
+
+  font-family: var(--font-body), sans-serif;
+
+  font-size: 12px;
+
+  font-weight: 400;
+
+  line-height: 1.7;
+
+  opacity: 0.84;
+}
+
+
+/* =========================================================
+   PHONE / EMAIL LINKS
+   ========================================================= */
+
+.contactTextLink {
+  display: block;
+
+  margin: 0 0 5px;
+
+  color: #d5ddc8;
+
+  font-family: var(--font-body), sans-serif;
+
+  font-size: 12px;
+
+  font-weight: 400;
+
+  line-height: 1.5;
+
+  text-decoration: none;
+
+  opacity: 0.84;
+
+  transition:
+    color 180ms ease,
+    opacity 180ms ease;
+}
+
+.contactTextLink:last-child {
+  margin-bottom: 0;
+}
+
+.contactTextLink:hover {
+  color: #f0f2e7;
+
+  opacity: 1;
+}
+
+
+/* =========================================================
+   GOOGLE MAPS LINK
+   ========================================================= */
+
+.mapLink {
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 8px;
+
+  margin-top: 13px;
+
+  padding: 8px 15px;
+
+  border: 1px solid rgba(194, 211, 167, 0.45);
+
+  border-radius: 999px;
+
+  color: #dce5cc;
+
+  font-family: var(--font-body), sans-serif;
+
+  font-size: 10px;
+
+  font-weight: 500;
+
+  letter-spacing: 0.03em;
+
+  line-height: 1;
+
+  text-decoration: none;
+
+  background: rgba(24, 61, 44, 0.18);
+
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease,
+    transform 180ms ease;
+}
+
+.mapLink:hover {
+  border-color: rgba(220, 229, 204, 0.75);
+
+  background: rgba(220, 229, 204, 0.10);
+
+  color: #f0f2e7;
+
+  transform: translateY(-1px);
+}
+
+.mapArrow {
+  display: inline-block;
+
+  font-size: 13px;
+
+  line-height: 1;
+
+  transition: transform 180ms ease;
+}
+
+.mapLink:hover .mapArrow {
+  transform: translate(2px, -2px);
+}
+
+
+/* =========================================================
+   BOTTOM BAR
+   ========================================================= */
+
+.bottomBar {
+  position: relative;
+
+  z-index: 1;
+
+  width: min(1180px, calc(100% - 80px));
+
+  margin: 0 auto;
+
+  padding: 21px 0 25px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 30px;
+
+  border-top: 1px solid rgba(206, 218, 190, 0.15);
+
+  color: #b9c5ad;
+
+  font-family: var(--font-body), sans-serif;
+
+  font-size: 9px;
+
+  font-weight: 400;
+
+  letter-spacing: 0.04em;
+
+  opacity: 0.72;
+}
+
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 1000px) {
+  .inner {
+    width: min(900px, calc(100% - 50px));
+
+    grid-template-columns:
+      1fr
+      1fr;
+
+    row-gap: 55px;
+
+    column-gap: 45px;
+  }
+
+  .contactColumn {
+    grid-column: span 2;
+
+    display: grid;
+
+    grid-template-columns:
+      1fr
+      1fr;
+
+    column-gap: 45px;
+  }
+
+  .contactColumn > .heading {
+    grid-column: span 2;
+  }
+
+  .contactBlock {
+    margin-bottom: 15px;
+  }
+
+  .bottomBar {
+    width: min(900px, calc(100% - 50px));
+  }
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 640px) {
+  .inner {
+    width: calc(100% - 40px);
+
+    padding: 58px 0 45px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 42px;
+  }
+
+  .brandColumn,
+  .column,
+  .contactColumn {
+    width: 100%;
+  }
+
+  .contactColumn {
+    display: flex;
+
+    flex-direction: column;
+  }
+
+  .contactColumn > .heading {
+    width: auto;
+  }
+
+  .contactBlock {
+    margin-bottom: 27px;
+  }
+
+  .logo {
+    width: 72px;
+  }
+
+  .tagline {
+    font-size: 12px;
+  }
+
+  .bottomBar {
+    width: calc(100% - 40px);
+
+    padding: 18px 0 22px;
+
+    flex-direction: column;
+
+    align-items: flex-start;
+
+    gap: 8px;
+
+    font-size: 8px;
+  }
+}

@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Navbar from "@/frontend/components/navbar/Navbar";
 import s from "@/frontend/components/wellness/wellness.module.css";
 import { Icon, Branch, RecipeCard, fontVars } from "@/frontend/components/wellness/Shared";
 import { benefits, products, recipes } from "@/lib/wellness-data";
@@ -39,8 +40,18 @@ export default function HealthBenefitsPage() {
   const p = products[idx];
   const b = benefits[bi];
 
+  const changeProduct = (direction) => {
+    setLeaving(true);
+    setTimeout(() => {
+      setIdx((i) => (i + direction + products.length) % products.length);
+      setLeaving(false);
+    }, 320);
+  };
+
   return (
-    <main className={`${s.page} ${fontVars}`}>
+    <>
+      <Navbar textTone="white" iconTone="white" fixed={true} />
+      <main className={`${s.page} ${fontVars}`} style={{ paddingTop: '0' }}>
       {/* HERO */}
       <section className={`${s.hero} ${s.grain}`}>
         <div className={s.glow} />
@@ -65,8 +76,15 @@ export default function HealthBenefitsPage() {
             </div>
           </div>
         </div>
-        <div className={s.marq} aria-hidden="true">
-          <div className={s.marqIn}>{[...MARQ, ...MARQ, ...MARQ, ...MARQ].map((t, i) => <span key={i}>{t}</span>)}</div>
+        <div className={s.heroDivider}>
+          <div className={s.dividerLine}></div>
+          <div className={s.dividerDots}>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
         </div>
       </section>
 
@@ -77,6 +95,11 @@ export default function HealthBenefitsPage() {
           <div key={p.id + "t"} className={s.center} style={{ animation: "fadeup .7s both", marginTop: 22 }}>
             <h2 className={s.pname}>{p.name}</h2>
             <p className={s.tag}>{p.tag}</p>
+            <div className={s.productControls} aria-label="Product showcase controls">
+              <button type="button" className={s.productControl} onClick={() => changeProduct(-1)} aria-label="Previous product">←</button>
+              <span aria-live="polite">{idx + 1} / {products.length}</span>
+              <button type="button" className={s.productControl} onClick={() => changeProduct(1)} aria-label="Next product">→</button>
+            </div>
           </div>
           <div className={s.arena}>
             <div className={s.rings}><i /><i /><i /></div>
@@ -137,5 +160,6 @@ export default function HealthBenefitsPage() {
         </div>
       </section>
     </main>
+    </>
   );
 }

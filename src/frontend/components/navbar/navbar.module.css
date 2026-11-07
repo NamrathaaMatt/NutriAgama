@@ -1,0 +1,245 @@
+.navbar {
+  position: absolute;
+  z-index: 60;
+  inset: 0 0 auto;
+  width: 100%;
+  min-height: 88px;
+  padding: 5px clamp(30px, 2.5vw, 42px) 0;
+
+  display: grid;
+  grid-template-columns: minmax(155px, 1fr) auto minmax(155px, 1fr);
+  align-items: center;
+  gap: clamp(24px, 4vw, 70px);
+
+  color: #171411;
+  transition: color 260ms ease;
+}
+
+.textWhite {
+  color: #fff;
+}
+
+.fixed {
+  position: fixed;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  border-radius: 8px;
+  transform: translateY(-18px);
+}
+
+.logo {
+  width: clamp(130px, 11.5vw, 190px);
+  height: auto;
+  display: block;
+}
+
+.links,
+.actions {
+  display: flex;
+  align-items: center;
+}
+
+.mobileLinks {
+  display: none;
+}
+
+.links {
+  position: absolute;
+  top: 64px;
+  left: 50%;
+  transform: translateX(-50%);
+  justify-content: center;
+  gap: clamp(90px, 7.8vw, 130px);
+}
+
+.link {
+  position: relative;
+  color: inherit;
+  font-family: var(--font-navbar), "Arial Narrow", sans-serif;
+  font-size: clamp(21px, 1.65vw, 28px);
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+
+/* Active page indicator - minimal line below */
+.linkActive::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -8px;
+  transform: translateX(-50%);
+  width: 28px;
+  height: 2px;
+  background: currentColor;
+  opacity: 0.85;
+}
+
+.actions {
+  position: absolute;
+  top: 66px;
+  right: clamp(60px, 5.6vw, 93px);
+  justify-content: flex-end;
+  gap: clamp(28px, 4vw, 66px);
+}
+
+.action {
+  width: clamp(24px, 2.15vw, 35px);
+  height: clamp(24px, 2.15vw, 35px);
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.icon {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.link:hover,
+.action:hover {
+  opacity: 0.72;
+  transform: translateY(-2px);
+}
+
+.brand:focus-visible,
+.link:focus-visible,
+.action:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 5px;
+}
+
+@media (max-width: 900px) {
+  .navbar {
+    min-height: 68px;
+    padding: 4px 24px 0;
+    grid-template-columns: minmax(112px, 1fr) auto;
+    gap: 24px;
+  }
+
+  .logo {
+    width: 118px;
+  }
+
+  .links {
+    display: none;
+  }
+
+  .mobileLinks {
+    position: fixed;
+    z-index: 70;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    justify-items: center;
+    /* max() ensures glass is tall enough even when safe-area-inset-bottom = 0 */
+    padding: 10px 24px max(env(safe-area-inset-bottom, 0px), 20px);
+    color: var(--color-deep-green);
+    background:
+      linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.18) 0%,
+        rgba(251, 247, 240, 0.72) 100%
+      );
+    backdrop-filter: blur(28px) saturate(1.6);
+    -webkit-backdrop-filter: blur(28px) saturate(1.6);
+    border-top: 1px solid rgba(255, 255, 255, 0.55);
+    box-shadow:
+      0 -1px 0 rgba(196, 180, 150, 0.25),
+      0 -8px 32px rgba(31, 61, 43, 0.08);
+  }
+
+  /* bleeds the same glass fill below the element so it always
+     reaches the absolute screen bottom on any device/browser */
+  .mobileLinks::after {
+    content: "";
+    position: absolute;
+    inset: 100% 0 -100vh;
+    background: rgba(251, 247, 240, 0.72);
+  }
+
+  .mobileLink {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    /* explicit — do NOT inherit from header which may be textWhite */
+    color: var(--color-deep-green);
+  }
+
+  /* Active indicator for mobile - small dot above icon */
+  .mobileLinkActive::before {
+    content: "";
+    position: absolute;
+    top: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--color-deep-green);
+  }
+
+  .mobileIcon {
+    width: 25px;
+    height: 25px;
+    stroke-width: 1.8;
+    color: var(--color-deep-green);
+  }
+
+  .brand {
+    transform: none;
+  }
+
+  .actions {
+    position: static;
+    gap: 20px;
+  }
+
+  .action {
+    width: 30px;
+    height: 30px;
+  }
+}
+
+@media (max-width: 460px) {
+  .navbar {
+    padding: 3px 16px 0;
+    gap: 14px;
+  }
+
+  .logo {
+    width: 96px;
+  }
+
+  .actions {
+    gap: 14px;
+  }
+
+  .action {
+    width: 25px;
+    height: 25px;
+  }
+
+  .mobileLinks {
+    padding: 6px 16px;
+  }
+}

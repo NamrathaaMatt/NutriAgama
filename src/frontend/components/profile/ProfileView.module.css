@@ -35,6 +35,70 @@
   color: var(--cream);
 }
 
+.logout {
+  position: absolute;
+  top: 14px;
+  left: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border: 1px solid rgba(233, 223, 200, 0.5);
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.12);
+  color: var(--cream);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.logout:hover:not(:disabled) {
+  background: rgba(233, 223, 200, 0.18);
+}
+
+.logout:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.logout:focus-visible {
+  outline: 2px solid var(--cream);
+  outline-offset: 2px;
+}
+
+.logout {
+  position: absolute;
+  top: 14px;
+  left: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border: 1px solid rgba(233, 223, 200, 0.5);
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.12);
+  color: var(--cream);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.logout:hover:not(:disabled) {
+  background: rgba(233, 223, 200, 0.18);
+}
+
+.logout:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.logout:focus-visible {
+  outline: 2px solid var(--cream);
+  outline-offset: 2px;
+}
+
 /* ---------- Identity ---------- */
 
 .identity {

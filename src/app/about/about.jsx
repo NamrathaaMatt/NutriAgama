@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import "./about.css";
 import { FiInstagram, FiFacebook, FiTwitter } from "react-icons/fi";
+import Navbar from "@/frontend/components/navbar/Navbar";
 
 const roots = [
   { emoji: "🌰", tag: "Ayurvedic Staple", title: "Almonds Soaked Overnight", text: "A practice rooted in Ayurvedic wisdom — soaking releases enzymes that unlock nutrients and make digestion effortless." },
@@ -160,9 +161,10 @@ export default function AboutUs() {
 
   return (
     <div className="about-page">
+      <Navbar textTone="black" iconTone="black" fixed autoContrast />
 
       {/* ── HERO ─────────────────────────────────────────── */}
-      <section className="about-hero" onMouseMove={handleHeroMove} onMouseLeave={resetHeroMove}>
+      <section className="about-hero" data-navbar-tone="white" onMouseMove={handleHeroMove} onMouseLeave={resetHeroMove}>
         <video className="about-hero__video" autoPlay muted loop playsInline src="/about-video.mp4" />
         <div className="about-hero__overlay" />
         <div className="about-hero__particles" aria-hidden="true">
@@ -254,7 +256,7 @@ export default function AboutUs() {
       </section>
 
       {/* ── VIDEO INTERLUDE ───────────────────────────────── */}
-      <section className="about-video-section">
+      <section className="about-video-section" data-navbar-tone="white">
         <video className="about-video-section__video" autoPlay muted loop playsInline src="/about-video.mp4" />
         <div className="about-video-section__overlay" />
         <div className="about-video-section__particles" aria-hidden="true">
@@ -455,9 +457,6 @@ export default function AboutUs() {
           </div>
         </div>
       </section>
-
-      
-
     </div>
   );
 }
