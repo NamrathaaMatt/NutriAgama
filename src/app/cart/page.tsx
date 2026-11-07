@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useProducts } from "@/frontend/hooks/use-products";
@@ -19,6 +19,7 @@ type SuggestionProduct = {
   price: number | string;
   image: string;
   hoverImage?: string;
+  inStock: boolean;
 };
 
 function TrashIcon() {
@@ -69,9 +70,9 @@ function CartRow({ line }: { line: CartLine }) {
         <span className="cartRowMeta">{product.tagline}</span>
         <span className="cartRowPrice">₹{product.price}</span>
 
-        <span className="cartRowStock">
+        <span className={`cartRowStock ${product.inStock ? "" : "cartRowStockOut"}`}>
           <span className="cartStockDot" aria-hidden="true" />
-          In stock
+          {product.inStock ? "In stock" : "Out of stock"}
         </span>
       </div>
 
@@ -88,6 +89,7 @@ function CartRow({ line }: { line: CartLine }) {
           <button
             type="button"
             onClick={() => updateQuantity(product.slug, line.quantity + 1)}
+            disabled={!product.inStock}
             aria-label="Increase quantity"
           >
             +
@@ -111,8 +113,10 @@ function CartSuggestionCard({ item }: { item: SuggestionProduct }) {
   const { addToCart } = useCart();
   const [added, setAdded] = useState(false);
 
-  const handleAdd = () => {
-    addToCart(item.slug, 1);
+  const handleAdd = async () => {
+    if (!item.inStock) return;
+    const ok = await addToCart(item.slug, 1);
+    if (!ok) return;
     setAdded(true);
     setTimeout(() => setAdded(false), 1200);
   };
@@ -146,8 +150,9 @@ function CartSuggestionCard({ item }: { item: SuggestionProduct }) {
           type="button"
           className={`cartSuggestionAddBtn ${added ? "cartSuggestionAddBtnActive" : ""}`}
           onClick={handleAdd}
+          disabled={!item.inStock}
         >
-          {added ? "✓" : "Add"}
+          {!item.inStock ? "Sold out" : added ? "✓" : "Add"}
         </button>
       </div>
 
@@ -157,17 +162,30 @@ function CartSuggestionCard({ item }: { item: SuggestionProduct }) {
 }
 
 export default function CartPage() {
-  const { products, loaded: productsLoaded } = useProducts();
-  const { items, loaded, totalItems, clearCart } = useCart();
+  const { products, loaded: productsLoaded, refreshProducts } = useProducts();
+  const { items, loaded, clearCart } = useCart();
+
+  // Reload stock every time the cart opens, so tags are never stale.
+  useEffect(() => {
+    refreshProducts();
+  }, [refreshProducts]);
 
   if (!loaded || !productsLoaded) {
     return <div className="page" />;
   }
 
-  const subtotal = items.reduce((sum, item) => {
+  // Only in-stock items count toward what can actually be bought.
+  const buyableItems = items.filter((item) => {
+    const product = products.find((p) => p.slug === item.slug);
+    return product ? product.inStock : false;
+  });
+  const hasOutOfStock = buyableItems.length !== items.length;
+
+  const subtotal = buyableItems.reduce((sum, item) => {
     const product = products.find((p) => p.slug === item.slug);
     return product ? sum + Number(product.price) * item.quantity : sum;
   }, 0);
+  const buyableCount = buyableItems.reduce((sum, item) => sum + item.quantity, 0);
 
   const cartSlugs = items.map((i) => i.slug);
   const suggestions = products.filter((p) => !cartSlugs.includes(p.slug)).slice(0, 4);
@@ -232,7 +250,7 @@ export default function CartPage() {
               <h2 className="cartSummaryTitle">Order Summary</h2>
 
               <div className="cartSummaryRow">
-                <span>Subtotal ({totalItems} items)</span>
+                <span>Subtotal ({buyableCount} items)</span>
                 <span>₹{subtotal.toLocaleString("en-IN")}</span>
               </div>
 
@@ -244,7 +262,17 @@ export default function CartPage() {
                 </span>
               </div>
 
-              <button type="button" className="addToCartBtn cartCheckoutBtn">
+              {hasOutOfStock && (
+                <p className="cartStockNotice">
+                  Some items are out of stock. Remove them to continue to checkout.
+                </p>
+              )}
+
+              <button
+                type="button"
+                className="addToCartBtn cartCheckoutBtn"
+                disabled={hasOutOfStock}
+              >
                 Proceed to Checkout →
               </button>
 

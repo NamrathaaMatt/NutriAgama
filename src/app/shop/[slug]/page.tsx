@@ -30,6 +30,7 @@ type RelatedProduct = {
   price: number | string;
   image: string;
   hoverImage?: string;
+  inStock: boolean;
 };
 
 function starClass(rating: number, position: number) {
@@ -81,8 +82,10 @@ function RelatedCard({ item }: { item: RelatedProduct }) {
   const [added, setAdded] = useState(false);
   const liked = isWishlisted(item.slug);
 
-  const handleAdd = () => {
-    addToCart(item.slug, 1);
+  const handleAdd = async () => {
+    if (!item.inStock) return;
+    const ok = await addToCart(item.slug, 1);
+    if (!ok) return;
     setAdded(true);
     setTimeout(() => setAdded(false), 1500);
   };
@@ -90,7 +93,9 @@ function RelatedCard({ item }: { item: RelatedProduct }) {
   return (
     <div className="card">
       <div className="cardImageWrap">
-        <span className="discountBadge">In Stock</span>
+        <span className={`discountBadge ${item.inStock ? "" : "outOfStockBadge"}`}>
+          {item.inStock ? "In Stock" : "Out of Stock"}
+        </span>
 
         <button
           type="button"
@@ -132,9 +137,20 @@ function RelatedCard({ item }: { item: RelatedProduct }) {
 
         <div className="cardFooter">
           <span className="price">₹{item.price}</span>
-          <button type="button" className="addToCartBtn" onClick={handleAdd}>
-            <span aria-hidden="true">{added ? "✓" : "🛒"}</span>{" "}
-            {added ? "Added" : "Add to Cart"}
+          <button
+            type="button"
+            className="addToCartBtn"
+            onClick={handleAdd}
+            disabled={!item.inStock}
+          >
+            {item.inStock ? (
+              <>
+                <span aria-hidden="true">{added ? "✓" : "🛒"}</span>{" "}
+                {added ? "Added" : "Add to Cart"}
+              </>
+            ) : (
+              "Out of Stock"
+            )}
           </button>
         </div>
       </div>
@@ -142,8 +158,14 @@ function RelatedCard({ item }: { item: RelatedProduct }) {
   );
 }
 
+// Keying by slug remounts the page content when the product changes,
+// so activeSlide, quantity etc. reset instead of carrying over.
 export default function ProductPage({ params }: ProductPageProps) {
   const { slug } = use(params);
+  return <ProductPageContent key={slug} slug={slug} />;
+}
+
+function ProductPageContent({ slug }: { slug: string }) {
   const { products, loaded } = useProducts();
   const product = products.find((p) => p.slug === slug);
 
@@ -173,15 +195,18 @@ export default function ProductPage({ params }: ProductPageProps) {
   const goNext = () =>
     setActiveSlide((i) => (i === images.length - 1 ? 0 : i + 1));
 
-  const handleAddToCart = () => {
-    addToCart(slug, quantity);
+  const handleAddToCart = async () => {
+    if (!product.inStock) return;
+    const ok = await addToCart(slug, quantity);
+    if (!ok) return;
     setAdded(true);
     setTimeout(() => setAdded(false), 1500);
   };
 
-  const handleBuyNow = () => {
-    addToCart(slug, quantity);
-    router.push("/cart");
+  const handleBuyNow = async () => {
+    if (!product.inStock) return;
+    const ok = await addToCart(slug, quantity);
+    if (ok) router.push("/cart");
   };
 
   const handleCopyLink = async () => {
@@ -215,7 +240,7 @@ export default function ProductPage({ params }: ProductPageProps) {
             </button>
 
             <Image
-              src={images[activeSlide]}
+              src={images[activeSlide] ?? images[0]}
               alt={`${product.name} photo ${activeSlide + 1}`}
               fill
               className="productImage"
@@ -248,7 +273,7 @@ export default function ProductPage({ params }: ProductPageProps) {
             <div className="productThumbRow">
               {images.map((src, i) => (
                 <button
-                  key={src}
+                  key={`${src}-${i}`}
                   type="button"
                   className={`productThumb ${i === activeSlide ? "productThumbActive" : ""}`}
                   onClick={() => setActiveSlide(i)}
@@ -319,11 +344,23 @@ export default function ProductPage({ params }: ProductPageProps) {
               type="button"
               className="addToCartBtn productAddToCartBtn"
               onClick={handleAddToCart}
+              disabled={!product.inStock}
             >
-              <span aria-hidden="true">{added ? "✓" : "🛒"}</span>{" "}
-              {added ? "Added" : "Add to Cart"}
+              {product.inStock ? (
+                <>
+                  <span aria-hidden="true">{added ? "✓" : "🛒"}</span>{" "}
+                  {added ? "Added" : "Add to Cart"}
+                </>
+              ) : (
+                "Out of Stock"
+              )}
             </button>
-            <button type="button" className="buyNowBtn" onClick={handleBuyNow}>
+            <button
+              type="button"
+              className="buyNowBtn"
+              onClick={handleBuyNow}
+              disabled={!product.inStock}
+            >
               Buy Now
             </button>
           </div>
@@ -344,6 +381,15 @@ export default function ProductPage({ params }: ProductPageProps) {
           <div className="productInfoSection">
             <h2 className="productInfoHeading">How to Use</h2>
             <p className="productInfoText">{product.howToUse}</p>
+          </div>
+
+          <div className="productLinkRow">
+            <Link href="/health-benefits" className="productLinkBtn">
+              <span aria-hidden="true">🌿</span> View Health Benefits
+            </Link>
+            <Link href="/recipes" className="productLinkBtn">
+              <span aria-hidden="true">🍽️</span> View Recipes
+            </Link>
           </div>
         </div>
       </div>

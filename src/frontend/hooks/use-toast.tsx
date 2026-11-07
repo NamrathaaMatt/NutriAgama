@@ -2,10 +2,11 @@
 
 import { createContext, useCallback, useContext, useRef, useState } from "react";
 
-type ToastContextType = {
-  showToast: (message: string) => void;
-};
+type ToastKind = "success" | "error";
 
+type ToastContextType = {
+  showToast: (message: string, kind?: ToastKind) => void;
+};
 const ToastContext = createContext<ToastContextType | null>(null);
 
 function CheckIcon() {
@@ -29,15 +30,17 @@ function CheckIcon() {
 export function ToastProvider({ children }: { children: React.ReactNode }) {
   const [message, setMessage] = useState<string | null>(null);
   const [visible, setVisible] = useState(false);
+  const [kind, setKind] = useState<ToastKind>("success");
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hideTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const showToast = useCallback((msg: string) => {
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    if (hideTimeoutRef.current) clearTimeout(hideTimeoutRef.current);
+  const showToast = useCallback((msg: string, toastKind: ToastKind = "success") => {
+  if (timeoutRef.current) clearTimeout(timeoutRef.current);
+  if (hideTimeoutRef.current) clearTimeout(hideTimeoutRef.current);
 
-    setMessage(msg);
-    setVisible(true);
+  setMessage(msg);
+  setKind(toastKind);
+  setVisible(true);
 
     timeoutRef.current = setTimeout(() => {
       setVisible(false);
@@ -51,12 +54,12 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
 
       {message && (
         <div className={`toastWrap ${visible ? "toastWrapVisible" : ""}`}>
-          <div className="toast">
-            <span className="toastIcon" aria-hidden="true">
-              <CheckIcon />
-            </span>
-            <span className="toastMessage">{message}</span>
-          </div>
+          <div className={`toast ${kind === "error" ? "toastError" : ""}`}>
+  <span className="toastIcon" aria-hidden="true">
+    {kind === "error" ? "!" : <CheckIcon />}
+  </span>
+  <span className="toastMessage">{message}</span>
+</div>
         </div>
       )}
     </ToastContext.Provider>

@@ -4,6 +4,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/backend/supabase/client";
 import { useToast } from "./use-toast";
+import { useProducts } from "./use-products";
 
 type CartItem = {
   slug: string;
@@ -14,18 +15,25 @@ type CartContextType = {
   items: CartItem[];
   loaded: boolean;
   totalItems: number;
-  addToCart: (slug: string, quantity?: number) => void;
-  updateQuantity: (slug: string, quantity: number) => void;
-  removeFromCart: (slug: string) => void;
-  clearCart: () => void;
+  addToCart: (slug: string, quantity?: number) => Promise<boolean>;
+  updateQuantity: (slug: string, quantity: number) => Promise<void>;
+  removeFromCart: (slug: string) => Promise<void>;
+  clearCart: () => Promise<void>;
 };
 
 const CartContext = createContext<CartContextType | null>(null);
+
+const OUT_OF_STOCK_MESSAGE = "Sorry, this product is out of stock";
+
+function isStockError(message: string) {
+  return message.includes("out of stock");
+}
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [loaded, setLoaded] = useState(false);
   const { showToast } = useToast();
+  const { refreshProducts } = useProducts();
   const router = useRouter();
   const supabase = createClient();
 
@@ -81,25 +89,68 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const addToCart = async (slug: string, quantity: number = 1) => {
+  // Shows the right toast for a failed write. On a stock error it also
+  // reloads the products so "In stock" tags match the database.
+  const handleWriteError = async (context: string, message: string, fallback: string) => {
+    if (isStockError(message)) {
+      // Expected situation, so warn instead of error (keeps the dev overlay quiet).
+      console.warn(`${context}:`, message);
+      showToast(OUT_OF_STOCK_MESSAGE, "error");
+      await refreshProducts();
+      return;
+    }
+    console.error(`${context}:`, message);
+    showToast(fallback, "error");
+  };
+
+  // Returns the signed-in user and the product id for a slug, or null.
+  const getUserAndProductId = async (slug: string) => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) return { user: null, productId: null };
+
+    const { data: product, error } = await supabase
+      .from("products")
+      .select("id")
+      .eq("slug", slug)
+      .single();
+
+    if (error || !product) {
+      console.error("Product lookup failed:", error?.message);
+      return { user, productId: null };
+    }
+
+    return { user, productId: product.id };
+  };
+
+  const addToCart = async (slug: string, quantity: number = 1): Promise<boolean> => {
     const {
       data: { user },
     } = await supabase.auth.getUser();
 
     if (!user) {
       router.push("/login");
-      return;
+      return false;
     }
 
     const { data: product, error: productError } = await supabase
       .from("products")
-      .select("id")
+      .select("id, in_stock")
       .eq("slug", slug)
       .single();
 
     if (productError || !product) {
       console.error("Product lookup failed:", productError?.message);
-      return;
+      showToast("Something went wrong. Please try again.", "error");
+      return false;
+    }
+
+    if (product.in_stock === false) {
+      showToast(OUT_OF_STOCK_MESSAGE, "error");
+      await refreshProducts();
+      return false;
     }
 
     const { data: existing } = await supabase
@@ -116,8 +167,12 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         .eq("id", existing.id);
 
       if (error) {
-        console.error("Update cart error:", error.message);
-        return;
+        await handleWriteError(
+          "Update cart error",
+          error.message,
+          "Could not add to cart. Please try again."
+        );
+        return false;
       }
     } else {
       const { error } = await supabase.from("cart_items").insert({
@@ -127,8 +182,12 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       });
 
       if (error) {
-        console.error("Insert cart error:", error.message);
-        return;
+        await handleWriteError(
+          "Insert cart error",
+          error.message,
+          "Could not add to cart. Please try again."
+        );
+        return false;
       }
     }
 
@@ -143,42 +202,49 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       return next;
     });
     showToast("Item added to cart!");
+    return true;
   };
 
   const updateQuantity = async (slug: string, quantity: number) => {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const { user, productId } = await getUserAndProductId(slug);
 
     if (!user) {
       router.push("/login");
       return;
     }
-
-    const { data: product } = await supabase
-      .from("products")
-      .select("id")
-      .eq("slug", slug)
-      .single();
-
-    if (!product) return;
+    if (!productId) return;
 
     if (quantity < 1) {
-      await supabase
+      const { error } = await supabase
         .from("cart_items")
         .delete()
         .eq("user_id", user.id)
-        .eq("product_id", product.id);
+        .eq("product_id", productId);
+
+      if (error) {
+        console.error("Remove cart item error:", error.message);
+        showToast("Could not update your cart. Please try again.", "error");
+        return;
+      }
 
       setItems((current) => current.filter((i) => i.slug !== slug));
       return;
     }
 
-    await supabase
+    const { error } = await supabase
       .from("cart_items")
       .update({ quantity })
       .eq("user_id", user.id)
-      .eq("product_id", product.id);
+      .eq("product_id", productId);
+
+    if (error) {
+      await handleWriteError(
+        "Update quantity error",
+        error.message,
+        "Could not update your cart. Please try again."
+      );
+      return;
+    }
 
     setItems((current) => {
       const next = [...current];
@@ -189,25 +255,21 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   };
 
   const removeFromCart = async (slug: string) => {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const { user, productId } = await getUserAndProductId(slug);
 
-    if (!user) return;
+    if (!user || !productId) return;
 
-    const { data: product } = await supabase
-      .from("products")
-      .select("id")
-      .eq("slug", slug)
-      .single();
-
-    if (!product) return;
-
-    await supabase
+    const { error } = await supabase
       .from("cart_items")
       .delete()
       .eq("user_id", user.id)
-      .eq("product_id", product.id);
+      .eq("product_id", productId);
+
+    if (error) {
+      console.error("Remove from cart error:", error.message);
+      showToast("Could not remove the item. Please try again.", "error");
+      return;
+    }
 
     setItems((current) => current.filter((i) => i.slug !== slug));
   };
@@ -219,7 +281,14 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
     if (!user) return;
 
-    await supabase.from("cart_items").delete().eq("user_id", user.id);
+    const { error } = await supabase.from("cart_items").delete().eq("user_id", user.id);
+
+    if (error) {
+      console.error("Clear cart error:", error.message);
+      showToast("Could not clear your cart. Please try again.", "error");
+      return;
+    }
+
     setItems([]);
   };
 

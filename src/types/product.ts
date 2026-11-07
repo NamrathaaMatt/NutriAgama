@@ -15,6 +15,7 @@ export type Product = {
   mrp: number;
   rating: number;
   reviewCount: number;
+  inStock: boolean;
   image: string;
   hoverImage?: string;
   backImage?: string;

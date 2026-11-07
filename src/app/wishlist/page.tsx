@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useProducts } from "@/frontend/hooks/use-products";
 import { useWishlist } from "@/frontend/hooks/use-wishlist";
 import { useCart } from "@/frontend/hooks/use-cart";
+import { useToast } from "@/frontend/hooks/use-toast";
 import Navbar from "@/frontend/components/navbar/Navbar";
 import "@/frontend/styles/shop.css";
 import { Heart } from "lucide-react";
@@ -18,6 +19,7 @@ type WishlistItem = {
   price: number | string;
   image: string;
   hoverImage?: string;
+  inStock: boolean;
 };
 
 type SuggestionProduct = {
@@ -27,6 +29,7 @@ type SuggestionProduct = {
   price: number | string;
   image: string;
   hoverImage?: string;
+  inStock: boolean;
 };
 
 function WishlistCard({ item }: { item: WishlistItem }) {
@@ -34,8 +37,10 @@ function WishlistCard({ item }: { item: WishlistItem }) {
   const { addToCart } = useCart();
   const [added, setAdded] = useState(false);
 
-  const handleAdd = () => {
-    addToCart(item.slug, 1);
+  const handleAdd = async () => {
+    if (!item.inStock) return;
+    const ok = await addToCart(item.slug, 1);
+    if (!ok) return;
     setAdded(true);
     setTimeout(() => setAdded(false), 1500);
   };
@@ -43,7 +48,9 @@ function WishlistCard({ item }: { item: WishlistItem }) {
   return (
     <div className="card">
       <div className="cardImageWrap">
-        <span className="discountBadge">In Stock</span>
+        <span className={`discountBadge ${item.inStock ? "" : "outOfStockBadge"}`}>
+          {item.inStock ? "In Stock" : "Out of Stock"}
+        </span>
 
         <button
           type="button"
@@ -84,9 +91,20 @@ function WishlistCard({ item }: { item: WishlistItem }) {
 
         <div className="cardFooter">
           <span className="price">₹{item.price}</span>
-          <button type="button" className="addToCartBtn" onClick={handleAdd}>
-            <span aria-hidden="true">{added ? "✓" : "🛒"}</span>{" "}
-            {added ? "Added" : "Add to Cart"}
+          <button
+            type="button"
+            className="addToCartBtn"
+            onClick={handleAdd}
+            disabled={!item.inStock}
+          >
+            {item.inStock ? (
+              <>
+                <span aria-hidden="true">{added ? "✓" : "🛒"}</span>{" "}
+                {added ? "Added" : "Add to Cart"}
+              </>
+            ) : (
+              "Out of Stock"
+            )}
           </button>
         </div>
       </div>
@@ -100,8 +118,10 @@ function WishlistSuggestionCard({ item }: { item: SuggestionProduct }) {
   const [added, setAdded] = useState(false);
   const liked = isWishlisted(item.slug);
 
-  const handleAdd = () => {
-    addToCart(item.slug, 1);
+  const handleAdd = async () => {
+    if (!item.inStock) return;
+    const ok = await addToCart(item.slug, 1);
+    if (!ok) return;
     setAdded(true);
     setTimeout(() => setAdded(false), 1500);
   };
@@ -109,7 +129,9 @@ function WishlistSuggestionCard({ item }: { item: SuggestionProduct }) {
   return (
     <div className="card">
       <div className="cardImageWrap">
-        <span className="discountBadge">In Stock</span>
+        <span className={`discountBadge ${item.inStock ? "" : "outOfStockBadge"}`}>
+          {item.inStock ? "In Stock" : "Out of Stock"}
+        </span>
 
         <button
           type="button"
@@ -151,9 +173,20 @@ function WishlistSuggestionCard({ item }: { item: SuggestionProduct }) {
 
         <div className="cardFooter">
           <span className="price">₹{item.price}</span>
-          <button type="button" className="addToCartBtn" onClick={handleAdd}>
-            <span aria-hidden="true">{added ? "✓" : "🛒"}</span>{" "}
-            {added ? "Added" : "Add to Cart"}
+          <button
+            type="button"
+            className="addToCartBtn"
+            onClick={handleAdd}
+            disabled={!item.inStock}
+          >
+            {item.inStock ? (
+              <>
+                <span aria-hidden="true">{added ? "✓" : "🛒"}</span>{" "}
+                {added ? "Added" : "Add to Cart"}
+              </>
+            ) : (
+              "Out of Stock"
+            )}
           </button>
         </div>
       </div>
@@ -165,6 +198,8 @@ export default function WishlistPage() {
   const { products, loaded: productsLoaded } = useProducts();
   const { slugs, loaded, toggleWishlist } = useWishlist();
   const { addToCart } = useCart();
+  const { showToast } = useToast();
+  const [moving, setMoving] = useState(false);
 
   if (!loaded || !productsLoaded) {
     return <div className="page" />;
@@ -172,12 +207,41 @@ export default function WishlistPage() {
 
   const items = products.filter((p) => slugs.includes(p.slug));
   const suggestions = products.filter((p) => !slugs.includes(p.slug)).slice(0, 4);
+  const inStockItems = items.filter((p) => p.inStock);
+  const soldOutCount = items.length - inStockItems.length;
 
-  const handleMoveAllToCart = () => {
-    items.forEach((item) => {
-      addToCart(item.slug, 1);
-      toggleWishlist(item.slug);
-    });
+  // Moves in-stock items one at a time. An item leaves the wishlist only
+  // after it was added to the cart, so nothing gets lost if an add fails.
+  const handleMoveAllToCart = async () => {
+    if (moving || inStockItems.length === 0) return;
+    setMoving(true);
+
+    let moved = 0;
+    let failed = 0;
+
+    try {
+      for (const item of inStockItems) {
+        const ok = await addToCart(item.slug, 1);
+        if (!ok) {
+          failed += 1;
+          continue;
+        }
+        await toggleWishlist(item.slug);
+        moved += 1;
+      }
+    } finally {
+      setMoving(false);
+    }
+
+    if (moved === 0) {
+      showToast("Could not move items to the cart. Please try again.", "error");
+      return;
+    }
+
+    const parts = [`Moved ${moved} ${moved === 1 ? "item" : "items"} to your cart`];
+    if (soldOutCount > 0) parts.push(`${soldOutCount} sold out stayed in your wishlist`);
+    if (failed > 0) parts.push(`${failed} could not be moved`);
+    showToast(parts.join(". "));
   };
 
   return (
@@ -249,8 +313,9 @@ export default function WishlistPage() {
               type="button"
               className="wishlistMoveAllBtn"
               onClick={handleMoveAllToCart}
+              disabled={moving || inStockItems.length === 0}
             >
-              🛒 Move All to Cart
+              {moving ? "Moving…" : "🛒 Move All to Cart"}
             </button>
           </div>
         )}

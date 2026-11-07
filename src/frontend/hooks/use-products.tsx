@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { createClient } from "@/backend/supabase/client";
 import { Product, Review } from "@/types/product";
 
@@ -30,12 +30,14 @@ type ProductRow = {
   badges: string[] | null;
   rating: number | null;
   review_count: number | null;
+  in_stock: boolean | null;
   reviews: ReviewRow[];
 };
 
 type ProductsContextType = {
   products: Product[];
   loaded: boolean;
+  refreshProducts: () => Promise<void>;
 };
 
 const ProductsContext = createContext<ProductsContextType | null>(null);
@@ -71,6 +73,7 @@ function toProduct(row: ProductRow): Product {
     badges: row.badges ?? [],
     rating: Number(row.rating ?? 0),
     reviewCount: row.review_count ?? 0,
+    inStock: row.in_stock ?? true,
     reviews,
   };
 }
@@ -79,34 +82,36 @@ export function ProductsProvider({ children }: { children: React.ReactNode }) {
   const [products, setProducts] = useState<Product[]>([]);
   const [loaded, setLoaded] = useState(false);
 
-  useEffect(() => {
-    const load = async () => {
-      const supabase = createClient();
-      const { data, error } = await supabase
-        .from("products")
-        .select("*, reviews(*)")
-        .order("created_at", { ascending: true });
+  // Reloads products from Supabase. It never sets `loaded` back to false,
+  // so pages don't flash blank while refreshing.
+  const refreshProducts = useCallback(async () => {
+    const supabase = createClient();
+    const { data, error } = await supabase
+      .from("products")
+      .select("*, reviews(*)")
+      .order("created_at", { ascending: true });
 
-      if (error) {
-        console.error("Failed to load products:", error.message);
+    if (error) {
+      console.error("Failed to load products:", error.message);
+    }
+
+    if (data) {
+      const list: Product[] = [];
+      for (let i = 0; i < data.length; i++) {
+        list.push(toProduct(data[i] as ProductRow));
       }
+      setProducts(list);
+    }
 
-      if (data) {
-        const list: Product[] = [];
-        for (let i = 0; i < data.length; i++) {
-          list.push(toProduct(data[i] as ProductRow));
-        }
-        setProducts(list);
-      }
-
-      setLoaded(true);
-    };
-
-    load();
+    setLoaded(true);
   }, []);
 
+  useEffect(() => {
+    refreshProducts();
+  }, [refreshProducts]);
+
   return (
-    <ProductsContext.Provider value={{ products, loaded }}>
+    <ProductsContext.Provider value={{ products, loaded, refreshProducts }}>
       {children}
     </ProductsContext.Provider>
   );
