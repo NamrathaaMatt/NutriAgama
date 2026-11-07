@@ -7,6 +7,10 @@ import Navbar from '@/frontend/components/navbar/Navbar';
 
 const EMAIL = 'aruyaagamasirinutri55@gmail.com';
 
+const MAP_URL =
+  'https://www.google.com/maps/search/?api=1&query=' +
+  encodeURIComponent('Aruya Agama siri nutrimill Gullahatti');
+
 /* SVG icons (replace the old emojis) */
 const ICON_PATHS = {
   chat: <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />,
@@ -55,17 +59,17 @@ function Icon({ name }) {
 }
 
 const quickActions = [
-  { icon: 'chat', label: 'Live chat', sub: 'Fastest response', href: '#' },
   { icon: 'phone', label: 'Call us', sub: '+91 80731 40054', href: 'tel:+918073140054' },
-  { icon: 'mail', label: 'Email', sub: EMAIL, href: `mailto:${EMAIL}` },
+  { icon: 'mail', label: 'Email', sub: EMAIL, href: `https://mail.google.com/mail/?view=cm&fs=1&to=${EMAIL}` },
   { icon: 'whatsapp', label: 'WhatsApp', sub: '+91 90365 72176', href: 'https://wa.me/919036572176' },
 ];
 
 const offices = [
   {
-    icon: 'pin',
-    title: 'Our Location',
-    lines: ['Siri Nutrimill', 'Gullahatti Kaval, Thataguppe Post', 'Harohalli Taluk, Bengaluru South District', 'Ramanagara – 562112'],
+   icon: 'pin',
+   title: 'Our Location',
+   href: MAP_URL,
+   lines: ['Siri Nutrimill', 'Gullahatti Kaval, Thataguppe Post', 'Harohalli Taluk, Bengaluru South District', 'Ramanagara – 562112'],
   },
   {
     icon: 'clock',
@@ -137,21 +141,32 @@ export default function ContactPageClient() {
           </div>
 
           <div className="c-offices">
-            {offices.map((office, i) => (
-              <div key={office.title} className="c-office-card c-reveal-right" style={{ transitionDelay: `${i * 0.1}s` }}>
-                <div className="c-office-card__title"><span className="c-office-card__icon"><Icon name={office.icon} /></span> {office.title}</div>
-                {office.lines.map((line) => (
-                  <div key={line} className="c-office-card__line">
-                    {line === EMAIL ? (
-                      <a href={`mailto:${EMAIL}`} className="c-office-card__link">{line}</a>
-                    ) : (
-                      line
-                    )}
-                  </div>
-                ))}
-              </div>
-            ))}
+  {offices.map((office, i) => {
+    const Card = office.href ? 'a' : 'div';
+    const linkProps = office.href
+      ? { href: office.href, target: '_blank', rel: 'noopener noreferrer' }
+      : {};
+    return (
+      <Card
+        key={office.title}
+        className="c-office-card c-reveal-right"
+        style={{ transitionDelay: `${i * 0.1}s` }}
+        {...linkProps}
+      >
+        <div className="c-office-card__title"><span className="c-office-card__icon"><Icon name={office.icon} /></span> {office.title}</div>
+        {office.lines.map((line) => (
+          <div key={line} className="c-office-card__line">
+            {line === EMAIL ? (
+              <a href={`mailto:${EMAIL}`} className="c-office-card__link">{line}</a>
+            ) : (
+              line
+            )}
           </div>
+        ))}
+      </Card>
+    );
+  })}
+</div>
         </section>
       </div>
     </main>
