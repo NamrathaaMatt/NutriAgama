@@ -32,17 +32,21 @@ export default function ProductCard({ product }: { product: Product }) {
   const [added, setAdded] = useState(false);
   const liked = isWishlisted(product.slug);
 
-  const handleAddToCart = (e: React.MouseEvent) => {
-    e.preventDefault();
-    addToCart(product.slug, 1);
-    setAdded(true);
-    setTimeout(() => setAdded(false), 1500);
-  };
+  const handleAddToCart = async (e: React.MouseEvent) => {
+  e.preventDefault();
+  if (!product.inStock) return;
+  const ok = await addToCart(product.slug, 1);
+  if (!ok) return;
+  setAdded(true);
+  setTimeout(() => setAdded(false), 1500);
+};
 
   return (
     <Link href={`/shop/${product.slug}`} className="card">
       <div className="cardImageWrap">
-        <span className="discountBadge">In Stock</span>
+        <span className={`discountBadge ${product.inStock ? "" : "outOfStockBadge"}`}>
+  {product.inStock ? "In Stock" : "Out of Stock"}
+</span>
         <button
           type="button"
           className={`wishlistBtn ${liked ? "wishlistBtnActive" : ""}`}
@@ -92,10 +96,21 @@ export default function ProductCard({ product }: { product: Product }) {
             <span className="price">₹{product.price}</span>
             <span className="mrp">₹{product.mrp}</span>
           </div>
-          <button className="addToCartBtn" type="button" onClick={handleAddToCart}>
-            <span aria-hidden="true">{added ? "✓" : "🛒"}</span>{" "}
-            {added ? "Added" : "Add to Cart"}
-          </button>
+          <button
+  className="addToCartBtn"
+  type="button"
+  onClick={handleAddToCart}
+  disabled={!product.inStock}
+>
+  {product.inStock ? (
+    <>
+      <span aria-hidden="true">{added ? "✓" : "🛒"}</span>{" "}
+      {added ? "Added" : "Add to Cart"}
+    </>
+  ) : (
+    "Out of Stock"
+  )}
+</button>
         </div>
       </div>
     </Link>

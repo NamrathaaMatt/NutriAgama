@@ -1993,3 +1993,114 @@
     font-size: 1.5rem;
   }
 }
+
+.viewRecipeBtn {
+  margin-top: 16px;
+  padding: 12px 22px;
+  border: 1.5px solid currentColor;
+  border-radius: 999px;
+  background: transparent;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.viewRecipeBtn:hover { background: rgba(0, 0, 0, 0.06); }
+
+.productHealth { max-width: 1100px; margin: 0 auto; padding: 40px 20px; }
+.healthGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-top: 24px;
+}
+.healthCard {
+  padding: 20px;
+  border-radius: 16px;
+  background: #faf6ee;
+  border: 1px solid rgba(0, 0, 0, 0.07);
+}
+.healthCardTitle { font-size: 1.05rem; margin: 0 0 8px; }
+.healthCardText { margin: 0; line-height: 1.55; font-size: 0.95rem; }
+.healthDisclaimer { margin-top: 16px; font-size: 0.8rem; opacity: 0.65; }
+
+.recipeOverlay {
+  position: fixed; inset: 0; z-index: 1000;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex; align-items: center; justify-content: center;
+  padding: 16px;
+}
+.recipeModal {
+  position: relative;
+  background: #fff;
+  width: min(640px, 100%);
+  max-height: 85vh;
+  overflow-y: auto;
+  border-radius: 20px;
+  padding: 28px;
+}
+.recipeClose {
+  position: absolute; top: 12px; right: 16px;
+  background: none; border: none; font-size: 1.8rem; cursor: pointer;
+}
+.recipeTitle { margin: 0 0 8px; padding-right: 32px; }
+.recipeIntro { margin: 0 0 12px; line-height: 1.55; }
+.recipeMeta { display: flex; flex-wrap: wrap; gap: 14px; font-size: 0.9rem; opacity: 0.8; }
+.recipeSubheading { margin: 22px 0 8px; font-size: 1.05rem; }
+.recipeList, .recipeSteps { padding-left: 20px; line-height: 1.7; }
+.outOfStockBadge { background: #8a8a8a; color: #fff; }
+.addToCartBtn:disabled { opacity: 0.55; cursor: not-allowed; }
+.cartSuggestionAddBtn:disabled { opacity: 0.55; cursor: not-allowed; }
+.toastError .toastIcon { background: #c0392b; color: #fff; }
+.productLinkRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 16px;
+}
+.productLinkBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 22px;
+  border: 1.5px solid currentColor;
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.productLinkBtn:hover { background: rgba(0, 0, 0, 0.06); }
+@media (max-width: 700px) {
+  .backToShop {
+    display: inline-flex;
+    margin-top: 96px;
+    position: relative;
+    z-index: 1;
+  }
+}
+
+.cartRowStockOut { color: #c0392b; }
+.cartRowStockOut .cartStockDot { background: #c0392b; }
+
+.cartStockNotice {
+  margin: 12px 0 0;
+  font-size: 0.85rem;
+  color: #c0392b;
+  line-height: 1.4;
+}
+
+.cartCheckoutBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.qtyStepper button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+.wishlistMoveAllBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
