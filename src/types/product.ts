@@ -6,11 +6,20 @@ export type Review = {
   date?: string;
 };
 
+export type Variant = {
+  id: string;
+  label: string;
+  price: number;
+  mrp: number;
+  inStock: boolean;
+};
+
 export type Product = {
   slug: string;
   name: string;
   tagline: string;
   category: string;
+  // price, mrp and netWeight show the smallest size. inStock is true if any size is in stock.
   price: number;
   mrp: number;
   rating: number;
@@ -26,4 +35,5 @@ export type Product = {
   howToUse: string;
   long_description: string;
   reviews: Review[];
+  variants: Variant[];
 };

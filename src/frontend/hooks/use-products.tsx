@@ -2,7 +2,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { createClient } from "@/backend/supabase/client";
-import { Product, Review } from "@/types/product";
+import { Product, Review, Variant } from "@/types/product";
 
 type ReviewRow = {
   name: string;
@@ -10,6 +10,15 @@ type ReviewRow = {
   title: string | null;
   comment: string;
   review_date: string | null;
+};
+
+type VariantRow = {
+  id: string;
+  label: string;
+  price: number;
+  mrp: number | null;
+  in_stock: boolean | null;
+  sort_order: number | null;
 };
 
 type ProductRow = {
@@ -32,6 +41,7 @@ type ProductRow = {
   review_count: number | null;
   in_stock: boolean | null;
   reviews: ReviewRow[];
+  product_variants: VariantRow[] | null;
 };
 
 type ProductsContextType = {
@@ -55,6 +65,20 @@ function toProduct(row: ProductRow): Product {
     });
   }
 
+  const variantRows = [...(row.product_variants ?? [])].sort(
+    (a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0)
+  );
+  const variants: Variant[] = variantRows.map((v) => ({
+    id: v.id,
+    label: v.label,
+    price: Number(v.price),
+    mrp: Number(v.mrp ?? v.price),
+    inStock: v.in_stock ?? true,
+  }));
+
+  // The smallest size is shown on cards. With no variants, fall back to the product row.
+  const first = variants[0];
+
   return {
     slug: row.slug,
     name: row.name,
@@ -62,9 +86,9 @@ function toProduct(row: ProductRow): Product {
     category: row.category ?? "",
     description: row.description ?? "",
     long_description: row.long_description ?? "",
-    price: Number(row.price),
-    mrp: Number(row.mrp ?? row.price),
-    netWeight: row.net_weight ?? "",
+    price: first ? first.price : Number(row.price),
+    mrp: first ? first.mrp : Number(row.mrp ?? row.price),
+    netWeight: first ? first.label : row.net_weight ?? "",
     ingredients: row.ingredients ?? "",
     howToUse: row.how_to_use ?? "",
     image: row.image,
@@ -73,8 +97,9 @@ function toProduct(row: ProductRow): Product {
     badges: row.badges ?? [],
     rating: Number(row.rating ?? 0),
     reviewCount: row.review_count ?? 0,
-    inStock: row.in_stock ?? true,
+    inStock: variants.length > 0 ? variants.some((v) => v.inStock) : row.in_stock ?? true,
     reviews,
+    variants,
   };
 }
 
@@ -88,7 +113,7 @@ export function ProductsProvider({ children }: { children: React.ReactNode }) {
     const supabase = createClient();
     const { data, error } = await supabase
       .from("products")
-      .select("*, reviews(*)")
+      .select("*, reviews(*), product_variants(*)")
       .order("created_at", { ascending: true });
 
     if (error) {
