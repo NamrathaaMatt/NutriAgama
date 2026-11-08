@@ -10,6 +10,7 @@ import "@/frontend/styles/shop.css";
 
 type CartLine = {
   slug: string;
+  variantId: string;
   quantity: number;
 };
 
@@ -20,6 +21,7 @@ type SuggestionProduct = {
   image: string;
   hoverImage?: string;
   inStock: boolean;
+  variants?: { id: string }[];
 };
 
 function TrashIcon() {
@@ -48,8 +50,9 @@ function CartRow({ line }: { line: CartLine }) {
   const { products } = useProducts();
   const { updateQuantity, removeFromCart } = useCart();
   const product = products.find((p) => p.slug === line.slug);
+  const variant = product?.variants.find((v) => v.id === line.variantId);
 
-  if (!product) return null;
+  if (!product || !variant) return null;
 
   return (
     <div className="cartRow">
@@ -67,12 +70,14 @@ function CartRow({ line }: { line: CartLine }) {
         <Link href={`/shop/${product.slug}`} className="cartRowName">
           {product.name}
         </Link>
-        <span className="cartRowMeta">{product.tagline}</span>
-        <span className="cartRowPrice">₹{product.price}</span>
+        <span className="cartRowMeta">
+          {variant.label} · {product.tagline}
+        </span>
+        <span className="cartRowPrice">₹{variant.price}</span>
 
-        <span className={`cartRowStock ${product.inStock ? "" : "cartRowStockOut"}`}>
+        <span className={`cartRowStock ${variant.inStock ? "" : "cartRowStockOut"}`}>
           <span className="cartStockDot" aria-hidden="true" />
-          {product.inStock ? "In stock" : "Out of stock"}
+          {variant.inStock ? "In stock" : "Out of stock"}
         </span>
       </div>
 
@@ -80,7 +85,7 @@ function CartRow({ line }: { line: CartLine }) {
         <div className="qtyStepper">
           <button
             type="button"
-            onClick={() => updateQuantity(product.slug, line.quantity - 1)}
+            onClick={() => updateQuantity(line.variantId, line.quantity - 1)}
             aria-label="Decrease quantity"
           >
             −
@@ -88,8 +93,8 @@ function CartRow({ line }: { line: CartLine }) {
           <span>{line.quantity}</span>
           <button
             type="button"
-            onClick={() => updateQuantity(product.slug, line.quantity + 1)}
-            disabled={!product.inStock}
+            onClick={() => updateQuantity(line.variantId, line.quantity + 1)}
+            disabled={!variant.inStock}
             aria-label="Increase quantity"
           >
             +
@@ -99,8 +104,8 @@ function CartRow({ line }: { line: CartLine }) {
         <button
           type="button"
           className="cartRowRemoveIcon"
-          onClick={() => removeFromCart(product.slug)}
-          aria-label={`Remove ${product.name} from cart`}
+          onClick={() => removeFromCart(line.variantId)}
+          aria-label={`Remove ${product.name} ${variant.label} from cart`}
         >
           <TrashIcon />
         </button>
@@ -112,6 +117,7 @@ function CartRow({ line }: { line: CartLine }) {
 function CartSuggestionCard({ item }: { item: SuggestionProduct }) {
   const { addToCart } = useCart();
   const [added, setAdded] = useState(false);
+  const hasSizes = (item.variants?.length ?? 0) > 1;
 
   const handleAdd = async () => {
     if (!item.inStock) return;
@@ -156,7 +162,9 @@ function CartSuggestionCard({ item }: { item: SuggestionProduct }) {
         </button>
       </div>
 
-      <span className="cartSuggestionPrice">₹{item.price}</span>
+      <span className="cartSuggestionPrice">
+        {hasSizes ? "From " : ""}₹{item.price}
+      </span>
     </div>
   );
 }
@@ -174,18 +182,22 @@ export default function CartPage() {
     return <div className="page" />;
   }
 
-  // Only in-stock items count toward what can actually be bought.
-  const buyableItems = items.filter((item) => {
+  // Each cart line is a product in one size. Look both up together.
+  const lines = items.map((item) => {
     const product = products.find((p) => p.slug === item.slug);
-    return product ? product.inStock : false;
+    const variant = product?.variants.find((v) => v.id === item.variantId);
+    return { item, variant };
   });
-  const hasOutOfStock = buyableItems.length !== items.length;
 
-  const subtotal = buyableItems.reduce((sum, item) => {
-    const product = products.find((p) => p.slug === item.slug);
-    return product ? sum + Number(product.price) * item.quantity : sum;
-  }, 0);
-  const buyableCount = buyableItems.reduce((sum, item) => sum + item.quantity, 0);
+  // Only in-stock sizes count toward what can actually be bought.
+  const buyable = lines.filter((l) => l.variant && l.variant.inStock);
+  const hasOutOfStock = lines.some((l) => l.variant && !l.variant.inStock);
+
+  const subtotal = buyable.reduce(
+    (sum, l) => sum + (l.variant ? l.variant.price * l.item.quantity : 0),
+    0
+  );
+  const buyableCount = buyable.reduce((sum, l) => sum + l.item.quantity, 0);
 
   const cartSlugs = items.map((i) => i.slug);
   const suggestions = products.filter((p) => !cartSlugs.includes(p.slug)).slice(0, 4);
@@ -258,7 +270,7 @@ export default function CartPage() {
                 <span>Total</span>
                 <span>
                   ₹{subtotal.toLocaleString("en-IN")}
-                  <span className="cartSummaryTotalNote">(incl. all taxes)</span>
+                  <span className="cartSummaryTotalNote">GST included</span>
                 </span>
               </div>
 
