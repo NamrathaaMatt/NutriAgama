@@ -59,9 +59,9 @@ function Icon({ name }) {
 }
 
 const quickActions = [
-  { icon: 'phone', label: 'Call us', sub: '+91 80731 40054', href: 'tel:+918073140054' },
-  { icon: 'mail', label: 'Email', sub: EMAIL, href: `https://mail.google.com/mail/?view=cm&fs=1&to=${EMAIL}` },
-  { icon: 'whatsapp', label: 'WhatsApp', sub: '+91 90365 72176', href: 'https://wa.me/919036572176' },
+  { icon: 'phone', label: 'Call us', sub: 'Tap to call us directly', href: 'tel:+918073140054' },
+  { icon: 'mail', label: 'Email', sub: 'Write to us on Gmail', href: `https://mail.google.com/mail/?view=cm&fs=1&to=${EMAIL}` },
+  { icon: 'whatsapp', label: 'WhatsApp', sub: 'Chat with us instantly', href: 'https://wa.me/919036572176?text=Hi%20Nutri%20Agama%2C%20I%20need%20help%20with...' },
 ];
 
 const offices = [
@@ -79,12 +79,14 @@ const offices = [
   {
     icon: 'phone',
     title: 'Call Us',
-    lines: ['+91 80731 40054', '+91 90365 72176'],
+    href: 'tel:+918073140054',
+    lines: ['Tap to call us directly'],
   },
   {
     icon: 'mail',
     title: 'Email Us',
-    lines: [EMAIL],
+    href: `https://mail.google.com/mail/?view=cm&fs=1&to=${EMAIL}`,
+    lines: ['Write to us on Gmail'],
   },
 ];
 
@@ -157,7 +159,14 @@ export default function ContactPageClient() {
         {office.lines.map((line) => (
           <div key={line} className="c-office-card__line">
             {line === EMAIL ? (
-              <a href={`mailto:${EMAIL}`} className="c-office-card__link">{line}</a>
+              <a
+  href={`https://mail.google.com/mail/?view=cm&fs=1&to=${EMAIL}`}
+  target="_blank"
+  rel="noopener noreferrer"
+  className="c-office-card__link"
+>
+  {line}
+</a>
             ) : (
               line
             )}
