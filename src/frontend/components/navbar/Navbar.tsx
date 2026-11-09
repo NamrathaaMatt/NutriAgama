@@ -7,6 +7,8 @@ import { usePathname } from "next/navigation";
 import { House, Info, Mail, Store } from "lucide-react";
 
 import { createClient } from "@/backend/supabase/client";
+import { useWishlist } from "@/frontend/hooks/use-wishlist";
+import { useCart } from "@/frontend/hooks/use-cart";
 
 import cartBlack from "./assets/cartb.png";
 import cartWhite from "./assets/cartw.png";
@@ -55,6 +57,12 @@ export default function Navbar({
 }: NavbarProps) {
   const navbarRef = useRef<HTMLElement>(null);
   const pathname = usePathname();
+
+  const { items: wishlistItems, loaded: wishlistLoaded } = useWishlist();
+  const { items: cartItems, loaded: cartLoaded } = useCart();
+
+  const wishlistCount = wishlistLoaded ? wishlistItems.length : 0;
+  const cartCount = cartLoaded ? cartItems.length : 0;
 
   const [contrastTone, setContrastTone] = useState<NavbarIconTone>(textTone);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -215,25 +223,31 @@ export default function Navbar({
         <Link
           href="/wishlist"
           className={styles.action}
-          aria-label="Wishlist"
+          aria-label={`Wishlist, ${wishlistCount} items`}
         >
           <Image
             src={icons.wishlist}
             alt=""
             className={styles.icon}
           />
+          {wishlistCount > 0 && (
+            <span className={styles.badge}>{wishlistCount}</span>
+          )}
         </Link>
 
         <Link
           href="/cart"
           className={styles.action}
-          aria-label="Cart"
+          aria-label={`Cart, ${cartCount} items`}
         >
           <Image
             src={icons.cart}
             alt=""
             className={styles.icon}
           />
+          {cartCount > 0 && (
+            <span className={styles.badge}>{cartCount}</span>
+          )}
         </Link>
 
         <Link

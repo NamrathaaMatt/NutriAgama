@@ -58,7 +58,6 @@ export default function ContactForm() {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    fireRipple(e.nativeEvent);
     setStatus('loading');
 
     try {
@@ -165,7 +164,12 @@ export default function ContactForm() {
       )}
 
       <div className="submitRow">
-        <button type="submit" className="submitBtn" disabled={status === 'loading'}>
+        <button
+          type="submit"
+          className="submitBtn"
+          onClick={fireRipple}
+          disabled={status === 'loading'}
+        >
           {status === 'loading' ? 'Sending...' : 'Send message'}
         </button>
 
