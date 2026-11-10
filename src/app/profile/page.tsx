@@ -8,7 +8,7 @@ export const metadata = {
 
 export default async function ProfilePage() {
   const supabase = await createClient();
-
+  
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -26,7 +26,7 @@ console.log("Authenticated user:", user.email);
     .select("id", { count: "exact", head: true });
 
   // TODO: orders and wishlist counts once those tables exist
-  const counts = { orders: 0, wishlist: 0, addresses: addressCount ?? 0 };
+  const counts = { orders: 0, addresses: addressCount ?? 0 };
 
   return (
     <ProfileView

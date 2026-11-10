@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useProducts } from "@/frontend/hooks/use-products";
@@ -10,6 +10,7 @@ import "@/frontend/styles/shop.css";
 
 type CartLine = {
   slug: string;
+  variantId: string;
   quantity: number;
 };
 
@@ -19,6 +20,8 @@ type SuggestionProduct = {
   price: number | string;
   image: string;
   hoverImage?: string;
+  inStock: boolean;
+  variants?: { id: string }[];
 };
 
 function TrashIcon() {
@@ -47,8 +50,9 @@ function CartRow({ line }: { line: CartLine }) {
   const { products } = useProducts();
   const { updateQuantity, removeFromCart } = useCart();
   const product = products.find((p) => p.slug === line.slug);
+  const variant = product?.variants.find((v) => v.id === line.variantId);
 
-  if (!product) return null;
+  if (!product || !variant) return null;
 
   return (
     <div className="cartRow">
@@ -66,12 +70,14 @@ function CartRow({ line }: { line: CartLine }) {
         <Link href={`/shop/${product.slug}`} className="cartRowName">
           {product.name}
         </Link>
-        <span className="cartRowMeta">{product.tagline}</span>
-        <span className="cartRowPrice">₹{product.price}</span>
+        <span className="cartRowMeta">
+          {variant.label} · {product.tagline}
+        </span>
+        <span className="cartRowPrice">₹{variant.price}</span>
 
-        <span className="cartRowStock">
+        <span className={`cartRowStock ${variant.inStock ? "" : "cartRowStockOut"}`}>
           <span className="cartStockDot" aria-hidden="true" />
-          In stock
+          {variant.inStock ? "In stock" : "Out of stock"}
         </span>
       </div>
 
@@ -79,7 +85,7 @@ function CartRow({ line }: { line: CartLine }) {
         <div className="qtyStepper">
           <button
             type="button"
-            onClick={() => updateQuantity(product.slug, line.quantity - 1)}
+            onClick={() => updateQuantity(line.variantId, line.quantity - 1)}
             aria-label="Decrease quantity"
           >
             −
@@ -87,7 +93,8 @@ function CartRow({ line }: { line: CartLine }) {
           <span>{line.quantity}</span>
           <button
             type="button"
-            onClick={() => updateQuantity(product.slug, line.quantity + 1)}
+            onClick={() => updateQuantity(line.variantId, line.quantity + 1)}
+            disabled={!variant.inStock}
             aria-label="Increase quantity"
           >
             +
@@ -97,8 +104,8 @@ function CartRow({ line }: { line: CartLine }) {
         <button
           type="button"
           className="cartRowRemoveIcon"
-          onClick={() => removeFromCart(product.slug)}
-          aria-label={`Remove ${product.name} from cart`}
+          onClick={() => removeFromCart(line.variantId)}
+          aria-label={`Remove ${product.name} ${variant.label} from cart`}
         >
           <TrashIcon />
         </button>
@@ -110,9 +117,12 @@ function CartRow({ line }: { line: CartLine }) {
 function CartSuggestionCard({ item }: { item: SuggestionProduct }) {
   const { addToCart } = useCart();
   const [added, setAdded] = useState(false);
+  const hasSizes = (item.variants?.length ?? 0) > 1;
 
-  const handleAdd = () => {
-    addToCart(item.slug, 1);
+  const handleAdd = async () => {
+    if (!item.inStock) return;
+    const ok = await addToCart(item.slug, 1);
+    if (!ok) return;
     setAdded(true);
     setTimeout(() => setAdded(false), 1200);
   };
@@ -146,28 +156,48 @@ function CartSuggestionCard({ item }: { item: SuggestionProduct }) {
           type="button"
           className={`cartSuggestionAddBtn ${added ? "cartSuggestionAddBtnActive" : ""}`}
           onClick={handleAdd}
+          disabled={!item.inStock}
         >
-          {added ? "✓" : "Add"}
+          {!item.inStock ? "Sold out" : added ? "✓" : "Add"}
         </button>
       </div>
 
-      <span className="cartSuggestionPrice">₹{item.price}</span>
+      <span className="cartSuggestionPrice">
+        {hasSizes ? "From " : ""}₹{item.price}
+      </span>
     </div>
   );
 }
 
 export default function CartPage() {
-  const { products, loaded: productsLoaded } = useProducts();
-  const { items, loaded, totalItems, clearCart } = useCart();
+  const { products, loaded: productsLoaded, refreshProducts } = useProducts();
+  const { items, loaded, clearCart } = useCart();
+
+  // Reload stock every time the cart opens, so tags are never stale.
+  useEffect(() => {
+    refreshProducts();
+  }, [refreshProducts]);
 
   if (!loaded || !productsLoaded) {
     return <div className="page" />;
   }
 
-  const subtotal = items.reduce((sum, item) => {
+  // Each cart line is a product in one size. Look both up together.
+  const lines = items.map((item) => {
     const product = products.find((p) => p.slug === item.slug);
-    return product ? sum + Number(product.price) * item.quantity : sum;
-  }, 0);
+    const variant = product?.variants.find((v) => v.id === item.variantId);
+    return { item, variant };
+  });
+
+  // Only in-stock sizes count toward what can actually be bought.
+  const buyable = lines.filter((l) => l.variant && l.variant.inStock);
+  const hasOutOfStock = lines.some((l) => l.variant && !l.variant.inStock);
+
+  const subtotal = buyable.reduce(
+    (sum, l) => sum + (l.variant ? l.variant.price * l.item.quantity : 0),
+    0
+  );
+  const buyableCount = buyable.reduce((sum, l) => sum + l.item.quantity, 0);
 
   const cartSlugs = items.map((i) => i.slug);
   const suggestions = products.filter((p) => !cartSlugs.includes(p.slug)).slice(0, 4);
@@ -232,7 +262,7 @@ export default function CartPage() {
               <h2 className="cartSummaryTitle">Order Summary</h2>
 
               <div className="cartSummaryRow">
-                <span>Subtotal ({totalItems} items)</span>
+                <span>Subtotal ({buyableCount} items)</span>
                 <span>₹{subtotal.toLocaleString("en-IN")}</span>
               </div>
 
@@ -240,11 +270,21 @@ export default function CartPage() {
                 <span>Total</span>
                 <span>
                   ₹{subtotal.toLocaleString("en-IN")}
-                  <span className="cartSummaryTotalNote">(incl. all taxes)</span>
+                  <span className="cartSummaryTotalNote">GST included</span>
                 </span>
               </div>
 
-              <button type="button" className="addToCartBtn cartCheckoutBtn">
+              {hasOutOfStock && (
+                <p className="cartStockNotice">
+                  Some items are out of stock. Remove them to continue to checkout.
+                </p>
+              )}
+
+              <button
+                type="button"
+                className="addToCartBtn cartCheckoutBtn"
+                disabled={hasOutOfStock}
+              >
                 Proceed to Checkout →
               </button>
 

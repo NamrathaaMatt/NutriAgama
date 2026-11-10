@@ -2,11 +2,35 @@
 import './contactForm.css';
 import { useState } from 'react';
 
+// ✏️ Replace these 4 with your real product names
+const PRODUCTS = [
+  'Moringa Powder',
+  'Kashaya Powder',
+  'Protein Powder',
+  'Menthe Mudde Mix',
+];
+
+const OTHER = 'Other';
+
+const FAQS = [
+  'Where is my order? (Order tracking)',
+  'How long will delivery take?',
+  'Can I cancel or change my order?',
+  'What is your return and refund policy?',
+  'I received a damaged or wrong item',
+  'Which payment methods do you accept?',
+  'My payment failed but money was deducted',
+  'Do you accept bulk or gift orders?',
+  OTHER,
+];
+
 const initialState = {
   name: '',
   email: '',
   subject: '',
   orderId: '',
+  product: '',
+  question: '',
   message: '',
 };
 
@@ -34,14 +58,17 @@ export default function ContactForm() {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    fireRipple(e.nativeEvent);
     setStatus('loading');
 
     try {
       const res = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify({
+          ...form,
+          // message is only sent when "Other" is selected
+          message: form.question === OTHER ? form.message : '',
+        }),
       });
 
       if (!res.ok) throw new Error('Request failed');
@@ -87,15 +114,62 @@ export default function ContactForm() {
         </div>
       </div>
 
+      {/* ── PRODUCT DROPDOWN ───────────────────────────── */}
       <div className="inputGroup">
-        <label className="inputLabel" htmlFor="message">Message</label>
+        <label className="inputLabel" htmlFor="product">Product</label>
         <div className="inputUnderline">
-          <textarea id="message" name="message" className="textarea" placeholder="Describe your issue in detail..." value={form.message} onChange={handleChange} required />
+          <select
+            id="product"
+            name="product"
+            className={`select ${!form.product ? 'placeholder' : ''}`}
+            value={form.product}
+            onChange={handleChange}
+          >
+            <option value="">Select the product you're asking about</option>
+            {PRODUCTS.map((p) => (
+              <option key={p} value={p}>{p}</option>
+            ))}
+          </select>
         </div>
       </div>
 
+      {/* ── FAQ / QUESTION DROPDOWN ────────────────────── */}
+      <div className="inputGroup">
+        <label className="inputLabel" htmlFor="question">How can we help?</label>
+        <div className="inputUnderline">
+          <select
+            id="question"
+            name="question"
+            className={`select ${!form.question ? 'placeholder' : ''}`}
+            value={form.question}
+            onChange={handleChange}
+            required
+          >
+            <option value="">Choose a question</option>
+            {FAQS.map((q) => (
+              <option key={q} value={q}>{q}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      {/* ── MESSAGE: only shows when "Other" is selected ── */}
+      {form.question === OTHER && (
+        <div className="inputGroup messageReveal">
+          <label className="inputLabel" htmlFor="message">Message</label>
+          <div className="inputUnderline">
+            <textarea id="message" name="message" className="textarea" placeholder="Describe your issue in detail..." value={form.message} onChange={handleChange} required />
+          </div>
+        </div>
+      )}
+
       <div className="submitRow">
-        <button type="submit" className="submitBtn" disabled={status === 'loading'}>
+        <button
+          type="submit"
+          className="submitBtn"
+          onClick={fireRipple}
+          disabled={status === 'loading'}
+        >
           {status === 'loading' ? 'Sending...' : 'Send message'}
         </button>
 

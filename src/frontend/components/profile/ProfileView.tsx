@@ -18,16 +18,14 @@ type ProfileUser = {
 
 type Counts = {
   orders: number;
-  wishlist: number;
   addresses: number;
 };
 
-type TabId = "details" | "addresses" | "wishlist" | "orders";
+type TabId = "details" | "addresses" |  "orders";
 
 const TABS: { id: TabId; label: string }[] = [
   { id: "details", label: "Details" },
   { id: "addresses", label: "Addresses" },
-  { id: "wishlist", label: "Wishlist" },
   { id: "orders", label: "Orders" },
 ];
 
@@ -213,7 +211,6 @@ export default function ProfileView({
 
   const stats = [
     { id: "orders" as TabId, label: "Orders", value: counts.orders, icon: "ti-package" },
-    { id: "wishlist" as TabId, label: "Wishlist", value: counts.wishlist, icon: "ti-heart" },
     { id: "addresses" as TabId, label: "Addresses", value: counts.addresses, icon: "ti-map-pin" },
   ];
 
@@ -342,15 +339,7 @@ export default function ProfileView({
             />
           )}
 
-          {tab === "wishlist" && (
-            <EmptyState
-              icon="ti-heart"
-              title="Your wishlist is empty"
-              text="Tap the heart on any product to save it here."
-              href="/shop"
-              cta="Browse the shop"
-            />
-          )}
+          
 
           {tab === "orders" && (
             <EmptyState

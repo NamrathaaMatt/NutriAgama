@@ -30,6 +30,8 @@ type RelatedProduct = {
   price: number | string;
   image: string;
   hoverImage?: string;
+  inStock: boolean;
+  variants?: { id: string }[];
 };
 
 function starClass(rating: number, position: number) {
@@ -80,9 +82,12 @@ function RelatedCard({ item }: { item: RelatedProduct }) {
   const { addToCart } = useCart();
   const [added, setAdded] = useState(false);
   const liked = isWishlisted(item.slug);
+  const hasSizes = (item.variants?.length ?? 0) > 1;
 
-  const handleAdd = () => {
-    addToCart(item.slug, 1);
+  const handleAdd = async () => {
+    if (!item.inStock) return;
+    const ok = await addToCart(item.slug, 1);
+    if (!ok) return;
     setAdded(true);
     setTimeout(() => setAdded(false), 1500);
   };
@@ -90,7 +95,9 @@ function RelatedCard({ item }: { item: RelatedProduct }) {
   return (
     <div className="card">
       <div className="cardImageWrap">
-        <span className="discountBadge">In Stock</span>
+        <span className={`discountBadge ${item.inStock ? "" : "outOfStockBadge"}`}>
+          {item.inStock ? "In Stock" : "Out of Stock"}
+        </span>
 
         <button
           type="button"
@@ -131,10 +138,23 @@ function RelatedCard({ item }: { item: RelatedProduct }) {
         <p className="cardTagline">{item.tagline}</p>
 
         <div className="cardFooter">
-          <span className="price">₹{item.price}</span>
-          <button type="button" className="addToCartBtn" onClick={handleAdd}>
-            <span aria-hidden="true">{added ? "✓" : "🛒"}</span>{" "}
-            {added ? "Added" : "Add to Cart"}
+          <span className="price">
+            {hasSizes ? "From " : ""}₹{item.price}
+          </span>
+          <button
+            type="button"
+            className="addToCartBtn"
+            onClick={handleAdd}
+            disabled={!item.inStock}
+          >
+            {item.inStock ? (
+              <>
+                <span aria-hidden="true">{added ? "✓" : "🛒"}</span>{" "}
+                {added ? "Added" : "Add to Cart"}
+              </>
+            ) : (
+              "Out of Stock"
+            )}
           </button>
         </div>
       </div>
@@ -142,8 +162,14 @@ function RelatedCard({ item }: { item: RelatedProduct }) {
   );
 }
 
+// Keying by slug remounts the page content when the product changes,
+// so activeSlide, quantity, selected size etc. reset instead of carrying over.
 export default function ProductPage({ params }: ProductPageProps) {
   const { slug } = use(params);
+  return <ProductPageContent key={slug} slug={slug} />;
+}
+
+function ProductPageContent({ slug }: { slug: string }) {
   const { products, loaded } = useProducts();
   const product = products.find((p) => p.slug === slug);
 
@@ -155,6 +181,7 @@ export default function ProductPage({ params }: ProductPageProps) {
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [added, setAdded] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
+  const [selectedVariantId, setSelectedVariantId] = useState<string | null>(null);
 
   if (!loaded) {
     return <div className="page" />;
@@ -164,7 +191,16 @@ export default function ProductPage({ params }: ProductPageProps) {
     notFound();
   }
 
-  const wishlisted = isWishlisted(slug);
+  // Default size: the smallest one that is in stock, otherwise the smallest.
+  const defaultVariant = product.variants.find((v) => v.inStock) ?? product.variants[0];
+  const selectedVariant =
+    product.variants.find((v) => v.id === selectedVariantId) ?? defaultVariant;
+  const displayPrice = selectedVariant ? selectedVariant.price : product.price;
+  const displayWeight = selectedVariant ? selectedVariant.label : product.netWeight;
+  const canBuy = selectedVariant ? selectedVariant.inStock : product.inStock;
+
+  // The heart saves the size that is currently selected.
+  const wishlisted = isWishlisted(slug, selectedVariant?.id);
   const images = [product.image, product.hoverImage, product.backImage].filter(Boolean) as string[];
   const others = products.filter((p) => p.slug !== slug);
 
@@ -173,15 +209,18 @@ export default function ProductPage({ params }: ProductPageProps) {
   const goNext = () =>
     setActiveSlide((i) => (i === images.length - 1 ? 0 : i + 1));
 
-  const handleAddToCart = () => {
-    addToCart(slug, quantity);
+  const handleAddToCart = async () => {
+    if (!canBuy) return;
+    const ok = await addToCart(slug, quantity, selectedVariant?.id);
+    if (!ok) return;
     setAdded(true);
     setTimeout(() => setAdded(false), 1500);
   };
 
-  const handleBuyNow = () => {
-    addToCart(slug, quantity);
-    router.push("/cart");
+  const handleBuyNow = async () => {
+    if (!canBuy) return;
+    const ok = await addToCart(slug, quantity, selectedVariant?.id);
+    if (ok) router.push("/cart");
   };
 
   const handleCopyLink = async () => {
@@ -208,14 +247,18 @@ export default function ProductPage({ params }: ProductPageProps) {
               type="button"
               className={`wishlistBtn productGalleryWishlist ${wishlisted ? "wishlistBtnActive" : ""}`}
               aria-pressed={wishlisted}
-              aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
-              onClick={() => toggleWishlist(slug)}
+              aria-label={
+                wishlisted
+                  ? `Remove ${displayWeight} from wishlist`
+                  : `Add ${displayWeight} to wishlist`
+              }
+              onClick={() => toggleWishlist(slug, selectedVariant?.id)}
             >
               <Heart size={20} fill={wishlisted ? "currentColor" : "none"} />
             </button>
 
             <Image
-              src={images[activeSlide]}
+              src={images[activeSlide] ?? images[0]}
               alt={`${product.name} photo ${activeSlide + 1}`}
               fill
               className="productImage"
@@ -248,7 +291,7 @@ export default function ProductPage({ params }: ProductPageProps) {
             <div className="productThumbRow">
               {images.map((src, i) => (
                 <button
-                  key={src}
+                  key={`${src}-${i}`}
                   type="button"
                   className={`productThumb ${i === activeSlide ? "productThumbActive" : ""}`}
                   onClick={() => setActiveSlide(i)}
@@ -274,10 +317,10 @@ export default function ProductPage({ params }: ProductPageProps) {
           <p className="productDescription">{product.description}</p>
 
           <div className="productPriceRow">
-            <span className="productPrice">₹{product.price}</span>
+            <span className="productPrice">₹{displayPrice}</span>
             <div className="productSpec">
               <span className="productSpecLabel">Net Weight</span>
-              <span className="productSpecValue">{product.netWeight}</span>
+              <span className="productSpecValue">{displayWeight}</span>
             </div>
             <button
               type="button"
@@ -289,6 +332,30 @@ export default function ProductPage({ params }: ProductPageProps) {
               {linkCopied ? "Copied!" : "Copy Link"}
             </button>
           </div>
+
+          {product.variants.length > 1 && (
+            <div className="productSizeSection">
+              <span className="productSpecLabel">Size</span>
+              <div className="productSizeRow">
+                {product.variants.map((v) => (
+                  <button
+                    key={v.id}
+                    type="button"
+                    className={`productSizeBtn ${
+                      v.id === selectedVariant?.id ? "productSizeBtnActive" : ""
+                    } ${v.inStock ? "" : "productSizeBtnSoldOut"}`}
+                    aria-pressed={v.id === selectedVariant?.id}
+                    onClick={() => setSelectedVariantId(v.id)}
+                  >
+                    <span className="productSizeLabel">{v.label}</span>
+                    <span className="productSizePrice">
+                      {v.inStock ? `₹${v.price}` : "Sold out"}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           <div className="productSpecRow">
             <div className="productSpec">
@@ -319,11 +386,23 @@ export default function ProductPage({ params }: ProductPageProps) {
               type="button"
               className="addToCartBtn productAddToCartBtn"
               onClick={handleAddToCart}
+              disabled={!canBuy}
             >
-              <span aria-hidden="true">{added ? "✓" : "🛒"}</span>{" "}
-              {added ? "Added" : "Add to Cart"}
+              {canBuy ? (
+                <>
+                  <span aria-hidden="true">{added ? "✓" : "🛒"}</span>{" "}
+                  {added ? "Added" : "Add to Cart"}
+                </>
+              ) : (
+                "Out of Stock"
+              )}
             </button>
-            <button type="button" className="buyNowBtn" onClick={handleBuyNow}>
+            <button
+              type="button"
+              className="buyNowBtn"
+              onClick={handleBuyNow}
+              disabled={!canBuy}
+            >
               Buy Now
             </button>
           </div>
@@ -344,6 +423,15 @@ export default function ProductPage({ params }: ProductPageProps) {
           <div className="productInfoSection">
             <h2 className="productInfoHeading">How to Use</h2>
             <p className="productInfoText">{product.howToUse}</p>
+          </div>
+
+          <div className="productLinkRow">
+            <Link href="/health-benefits" className="productLinkBtn">
+              <span aria-hidden="true">🌿</span> View Health Benefits
+            </Link>
+            <Link href="/recipes" className="productLinkBtn">
+              <span aria-hidden="true">🍽️</span> View Recipes
+            </Link>
           </div>
         </div>
       </div>

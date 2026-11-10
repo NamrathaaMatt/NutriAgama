@@ -133,6 +133,7 @@
 
 .name {
   margin: 0;
+  transform: translateY(7px);
   font-family: var(--font-heading, Georgia, "Times New Roman", serif);
   font-size: 1.5rem;
   font-weight: 500;

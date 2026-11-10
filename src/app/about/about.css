@@ -13,6 +13,8 @@
   --moss:         #4b5a3a;
   --clay:         #a85c37;
   --line:         #d9cbae;
+  --hero-ivory:   #FFF8EC;
+  --hero-saffron: #E8B04B;
   --font-display: "Fraunces", Georgia, serif;
   --font-body:    "Work Sans", sans-serif;
   --ease:         cubic-bezier(0.22, 0.7, 0.22, 1);
@@ -54,7 +56,9 @@ img, svg { max-width: 100%; display: block; }
 .about-hero__video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; }
 .about-hero__overlay {
   position: absolute; inset: 0; z-index: 1;
-  background: linear-gradient(180deg, rgba(38,35,29,.55) 0%, rgba(38,35,29,.35) 45%, rgba(38,35,29,.7) 100%);
+  background:
+    linear-gradient(90deg, rgba(38,35,29,.55) 0%, rgba(38,35,29,0) 70%),
+    linear-gradient(180deg, rgba(38,35,29,.55) 0%, rgba(38,35,29,.35) 45%, rgba(38,35,29,.7) 100%);
 }
 .about-hero__particles { position: absolute; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; }
 .hero-particle {
@@ -80,6 +84,8 @@ img, svg { max-width: 100%; display: block; }
 .about-hero__heading {
   font-family: var(--font-display); font-weight: 500;
   font-size: clamp(2.4rem, 5.2vw, 4rem); line-height: 1.1; margin: 1rem 0 1.3rem;
+  color: var(--hero-ivory);
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.45);
 }
 .hero-line { display: block; overflow: hidden; }
 .hero-line span { display: block; transform: translateY(105%); animation: lineUp .85s var(--ease) forwards; }
@@ -87,8 +93,11 @@ img, svg { max-width: 100%; display: block; }
 .hero-line:nth-child(2) span { animation-delay: .52s; }
 @keyframes lineUp { to { transform: translateY(0); } }
 .hero-underline { position: relative; font-style: italic; }
+.about-hero__heading .hero-underline {
+  color: var(--hero-saffron);
+}
 .hero-underline svg { position: absolute; left: 0; bottom: -6px; width: 100%; height: 12px; overflow: visible; }
-.hero-underline path { stroke: var(--clay); stroke-width: 3; fill: none; stroke-dasharray: 260; stroke-dashoffset: 260; animation: drawLine 1.1s 1.15s ease forwards; }
+.hero-underline path { stroke: #D98B52; stroke-width: 3; fill: none; /* keep the rest */ }
 @keyframes drawLine { to { stroke-dashoffset: 0; } }
 .about-hero__sub {
   font-size: 1.05rem; color: #ece3d2; max-width: 44ch; line-height: 1.7; margin-bottom: .6rem;
@@ -219,7 +228,7 @@ img, svg { max-width: 100%; display: block; }
 .belief-rail__num { font-family: var(--font-display); color: var(--clay); }
 .belief-rail__bar {
   position: absolute; left: 0; bottom: 0; height: 2px; width: 100%; background: var(--clay);
-  transform: scaleX(0); transform-origin: left; animation: beliefBar 5s linear forwards;
+  transform: scaleX(0); transform-origin: left; animation: beliefBar 10s linear forwards;
 }
 
 .belief-say__title {

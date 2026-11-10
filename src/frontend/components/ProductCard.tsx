@@ -31,10 +31,14 @@ export default function ProductCard({ product }: { product: Product }) {
   const { addToCart } = useCart();
   const [added, setAdded] = useState(false);
   const liked = isWishlisted(product.slug);
+  const hasSizes = product.variants.length > 1;
 
-  const handleAddToCart = (e: React.MouseEvent) => {
+  const handleAddToCart = async (e: React.MouseEvent) => {
     e.preventDefault();
-    addToCart(product.slug, 1);
+    if (!product.inStock) return;
+    // Adds the smallest in-stock size. Customers pick other sizes on the product page.
+    const ok = await addToCart(product.slug, 1);
+    if (!ok) return;
     setAdded(true);
     setTimeout(() => setAdded(false), 1500);
   };
@@ -42,7 +46,9 @@ export default function ProductCard({ product }: { product: Product }) {
   return (
     <Link href={`/shop/${product.slug}`} className="card">
       <div className="cardImageWrap">
-        <span className="discountBadge">In Stock</span>
+        <span className={`discountBadge ${product.inStock ? "" : "outOfStockBadge"}`}>
+          {product.inStock ? "In Stock" : "Out of Stock"}
+        </span>
         <button
           type="button"
           className={`wishlistBtn ${liked ? "wishlistBtnActive" : ""}`}
@@ -89,12 +95,25 @@ export default function ProductCard({ product }: { product: Product }) {
 
         <div className="cardFooter">
           <div className="priceBlock">
-            <span className="price">₹{product.price}</span>
-            <span className="mrp">₹{product.mrp}</span>
+            <span className="price">
+              {hasSizes ? "From " : ""}₹{product.price}
+            </span>
+            {product.mrp > product.price && <span className="mrp">₹{product.mrp}</span>}
           </div>
-          <button className="addToCartBtn" type="button" onClick={handleAddToCart}>
-            <span aria-hidden="true">{added ? "✓" : "🛒"}</span>{" "}
-            {added ? "Added" : "Add to Cart"}
+          <button
+            className="addToCartBtn"
+            type="button"
+            onClick={handleAddToCart}
+            disabled={!product.inStock}
+          >
+            {product.inStock ? (
+              <>
+                <span aria-hidden="true">{added ? "✓" : "🛒"}</span>{" "}
+                {added ? "Added" : "Add to Cart"}
+              </>
+            ) : (
+              "Out of Stock"
+            )}
           </button>
         </div>
       </div>

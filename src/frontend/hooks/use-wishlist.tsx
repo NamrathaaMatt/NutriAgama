@@ -1,25 +1,41 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/backend/supabase/client";
 import { useToast } from "./use-toast";
+import { useProducts } from "./use-products";
+
+type WishlistEntry = {
+  slug: string;
+  variantId: string;
+};
 
 type WishlistContextType = {
+  // One entry per saved size.
+  items: WishlistEntry[];
+  // One slug per saved size, so a product saved in two sizes appears twice.
   slugs: string[];
   loaded: boolean;
-  isWishlisted: (slug: string) => boolean;
-  toggleWishlist: (slug: string) => void;
+  // Without a variantId, these use the product's smallest size.
+  isWishlisted: (slug: string, variantId?: string) => boolean;
+  toggleWishlist: (slug: string, variantId?: string) => Promise<void>;
 };
 
 const WishlistContext = createContext<WishlistContextType | null>(null);
 
+const UNIQUE_VIOLATION = "23505";
+
 export function WishlistProvider({ children }: { children: React.ReactNode }) {
-  const [slugs, setSlugs] = useState<string[]>([]);
+  const [items, setItems] = useState<WishlistEntry[]>([]);
   const [loaded, setLoaded] = useState(false);
   const { showToast } = useToast();
+  const { products } = useProducts();
   const router = useRouter();
   const supabase = createClient();
+
+  // Sizes whose save is still running. Extra clicks on them are ignored.
+  const pending = useRef<Set<string>>(new Set());
 
   useEffect(() => {
     let active = true;
@@ -31,7 +47,7 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
 
       if (!user) {
         if (active) {
-          setSlugs([]);
+          setItems([]);
           setLoaded(true);
         }
         return;
@@ -39,7 +55,7 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
 
       const { data, error } = await supabase
         .from("wishlist_items")
-        .select("products(slug)")
+        .select("variant_id, products(slug)")
         .eq("user_id", user.id);
 
       if (!active) return;
@@ -50,11 +66,11 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
         return;
       }
 
-      const loadedSlugs = (data ?? [])
-        .map((row: any) => row.products?.slug)
-        .filter(Boolean);
+      const loaded: WishlistEntry[] = (data ?? [])
+        .filter((row: any) => row.products?.slug && row.variant_id)
+        .map((row: any) => ({ slug: row.products.slug, variantId: row.variant_id }));
 
-      setSlugs(loadedSlugs);
+      setItems(loaded);
       setLoaded(true);
     }
 
@@ -73,63 +89,94 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const isWishlisted = (slug: string) => slugs.includes(slug);
+  const defaultVariantId = (slug: string) =>
+    products.find((p) => p.slug === slug)?.variants[0]?.id;
 
-  const toggleWishlist = async (slug: string) => {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+  const isWishlisted = (slug: string, variantId?: string) => {
+    const id = variantId ?? defaultVariantId(slug);
+    if (!id) return false;
+    return items.some((i) => i.variantId === id);
+  };
 
-    if (!user) {
-      router.push("/login");
+  const toggleWishlist = async (slug: string, variantIdArg?: string) => {
+    const variantId = variantIdArg ?? defaultVariantId(slug);
+
+    if (!variantId) {
+      showToast("Something went wrong. Please try again.", "error");
       return;
     }
 
-    const { data: product, error: productError } = await supabase
-      .from("products")
-      .select("id")
-      .eq("slug", slug)
-      .single();
+    if (pending.current.has(variantId)) return;
+    pending.current.add(variantId);
 
-    if (productError || !product) {
-      console.error("Product lookup failed:", productError?.message);
-      return;
-    }
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
-    const isCurrentlyIn = slugs.includes(slug);
-
-    if (isCurrentlyIn) {
-      const { error } = await supabase
-        .from("wishlist_items")
-        .delete()
-        .eq("user_id", user.id)
-        .eq("product_id", product.id);
-
-      if (error) {
-        console.error("Remove wishlist error:", error.message);
+      if (!user) {
+        router.push("/login");
         return;
       }
 
-      setSlugs((current) => current.filter((s) => s !== slug));
-      showToast("Item removed from wishlist");
-    } else {
+      const isCurrentlyIn = items.some((i) => i.variantId === variantId);
+
+      if (isCurrentlyIn) {
+        const { error } = await supabase
+          .from("wishlist_items")
+          .delete()
+          .eq("user_id", user.id)
+          .eq("variant_id", variantId);
+
+        if (error) {
+          console.error("Remove wishlist error:", error.message);
+          showToast("Could not update your wishlist. Please try again.", "error");
+          return;
+        }
+
+        setItems((current) => current.filter((i) => i.variantId !== variantId));
+        showToast("Item removed from wishlist");
+        return;
+      }
+
+      // product_id is filled in by the database trigger from the size.
       const { error } = await supabase.from("wishlist_items").insert({
         user_id: user.id,
-        product_id: product.id,
+        variant_id: variantId,
       });
 
       if (error) {
+        if (error.code === UNIQUE_VIOLATION) {
+          // Already saved in the database, so just make the screen agree.
+          setItems((current) =>
+            current.some((i) => i.variantId === variantId)
+              ? current
+              : [...current, { slug, variantId }]
+          );
+          return;
+        }
         console.error("Add wishlist error:", error.message);
+        showToast("Could not update your wishlist. Please try again.", "error");
         return;
       }
 
-      setSlugs((current) => [...current, slug]);
+      setItems((current) =>
+        current.some((i) => i.variantId === variantId)
+          ? current
+          : [...current, { slug, variantId }]
+      );
       showToast("Item added to wishlist!");
+    } finally {
+      pending.current.delete(variantId);
     }
   };
 
+  const slugs = items.map((i) => i.slug);
+
   return (
-    <WishlistContext.Provider value={{ slugs, loaded, isWishlisted, toggleWishlist }}>
+    <WishlistContext.Provider
+      value={{ items, slugs, loaded, isWishlisted, toggleWishlist }}
+    >
       {children}
     </WishlistContext.Provider>
   );

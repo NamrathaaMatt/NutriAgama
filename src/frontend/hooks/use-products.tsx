@@ -1,8 +1,8 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { createClient } from "@/backend/supabase/client";
-import { Product, Review } from "@/types/product";
+import { Product, Review, Variant } from "@/types/product";
 
 type ReviewRow = {
   name: string;
@@ -10,6 +10,15 @@ type ReviewRow = {
   title: string | null;
   comment: string;
   review_date: string | null;
+};
+
+type VariantRow = {
+  id: string;
+  label: string;
+  price: number;
+  mrp: number | null;
+  in_stock: boolean | null;
+  sort_order: number | null;
 };
 
 type ProductRow = {
@@ -30,12 +39,15 @@ type ProductRow = {
   badges: string[] | null;
   rating: number | null;
   review_count: number | null;
+  in_stock: boolean | null;
   reviews: ReviewRow[];
+  product_variants: VariantRow[] | null;
 };
 
 type ProductsContextType = {
   products: Product[];
   loaded: boolean;
+  refreshProducts: () => Promise<void>;
 };
 
 const ProductsContext = createContext<ProductsContextType | null>(null);
@@ -53,6 +65,20 @@ function toProduct(row: ProductRow): Product {
     });
   }
 
+  const variantRows = [...(row.product_variants ?? [])].sort(
+    (a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0)
+  );
+  const variants: Variant[] = variantRows.map((v) => ({
+    id: v.id,
+    label: v.label,
+    price: Number(v.price),
+    mrp: Number(v.mrp ?? v.price),
+    inStock: v.in_stock ?? true,
+  }));
+
+  // The smallest size is shown on cards. With no variants, fall back to the product row.
+  const first = variants[0];
+
   return {
     slug: row.slug,
     name: row.name,
@@ -60,9 +86,9 @@ function toProduct(row: ProductRow): Product {
     category: row.category ?? "",
     description: row.description ?? "",
     long_description: row.long_description ?? "",
-    price: Number(row.price),
-    mrp: Number(row.mrp ?? row.price),
-    netWeight: row.net_weight ?? "",
+    price: first ? first.price : Number(row.price),
+    mrp: first ? first.mrp : Number(row.mrp ?? row.price),
+    netWeight: first ? first.label : row.net_weight ?? "",
     ingredients: row.ingredients ?? "",
     howToUse: row.how_to_use ?? "",
     image: row.image,
@@ -71,7 +97,9 @@ function toProduct(row: ProductRow): Product {
     badges: row.badges ?? [],
     rating: Number(row.rating ?? 0),
     reviewCount: row.review_count ?? 0,
+    inStock: variants.length > 0 ? variants.some((v) => v.inStock) : row.in_stock ?? true,
     reviews,
+    variants,
   };
 }
 
@@ -79,34 +107,36 @@ export function ProductsProvider({ children }: { children: React.ReactNode }) {
   const [products, setProducts] = useState<Product[]>([]);
   const [loaded, setLoaded] = useState(false);
 
-  useEffect(() => {
-    const load = async () => {
-      const supabase = createClient();
-      const { data, error } = await supabase
-        .from("products")
-        .select("*, reviews(*)")
-        .order("created_at", { ascending: true });
+  // Reloads products from Supabase. It never sets `loaded` back to false,
+  // so pages don't flash blank while refreshing.
+  const refreshProducts = useCallback(async () => {
+    const supabase = createClient();
+    const { data, error } = await supabase
+      .from("products")
+      .select("*, reviews(*), product_variants(*)")
+      .order("created_at", { ascending: true });
 
-      if (error) {
-        console.error("Failed to load products:", error.message);
+    if (error) {
+      console.error("Failed to load products:", error.message);
+    }
+
+    if (data) {
+      const list: Product[] = [];
+      for (let i = 0; i < data.length; i++) {
+        list.push(toProduct(data[i] as ProductRow));
       }
+      setProducts(list);
+    }
 
-      if (data) {
-        const list: Product[] = [];
-        for (let i = 0; i < data.length; i++) {
-          list.push(toProduct(data[i] as ProductRow));
-        }
-        setProducts(list);
-      }
-
-      setLoaded(true);
-    };
-
-    load();
+    setLoaded(true);
   }, []);
 
+  useEffect(() => {
+    refreshProducts();
+  }, [refreshProducts]);
+
   return (
-    <ProductsContext.Provider value={{ products, loaded }}>
+    <ProductsContext.Provider value={{ products, loaded, refreshProducts }}>
       {children}
     </ProductsContext.Provider>
   );
