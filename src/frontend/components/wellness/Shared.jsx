@@ -1,9 +1,6 @@
-import { Cormorant_Garamond, Manrope } from "next/font/google";
 import s from "./wellness.module.css";
 
-const head = Cormorant_Garamond({ subsets: ["latin"], weight: ["500", "600"], variable: "--font-head" });
-const body = Manrope({ subsets: ["latin"], variable: "--font-body" });
-export const fontVars = `${head.variable} ${body.variable}`;
+export const fontVars = "";
 
 const paths = {
   strength: "M6.5 6.5v11M17.5 6.5v11M3.5 9v6M20.5 9v6M6.5 12h11",
