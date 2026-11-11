@@ -1,7 +1,14 @@
 import LoginForm from "@/frontend/components/auth/LoginForm";
 import styles from "./page.module.css";
 
-export default function LoginPage() {
+type LoginPageProps = {
+  searchParams: Promise<{ next?: string | string[] | undefined }>;
+};
+
+export default async function LoginPage({ searchParams }: LoginPageProps) {
+  const params = await searchParams;
+  const next = typeof params.next === "string" ? params.next : undefined;
+
   return (
     <div className={styles.page}>
       <div className={styles.visualSide}>
@@ -48,7 +55,7 @@ export default function LoginPage() {
             Log in to continue your wellness journey.
           </p>
 
-          <LoginForm />
+          <LoginForm next={next} />
         </div>
       </div>
     </div>

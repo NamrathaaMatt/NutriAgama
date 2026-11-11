@@ -8,7 +8,7 @@ import PasswordInput from "./PasswordInput";
 import styles from "./LoginForm.module.css";
 import GoogleButton from "./GoogleButton";
 
-export default function LoginForm() {
+export default function LoginForm({ next }: { next?: string }) {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -29,9 +29,12 @@ export default function LoginForm() {
       return;
     }
 
-    // Refresh to get the new session, then redirect
+    // Refresh to get the new session, then redirect. `next` only accepts a
+    // same-site path so it can never bounce to another domain.
     router.refresh();
-    router.push("/profile");
+    const destination =
+      next && next.startsWith("/") && !next.startsWith("//") ? next : "/profile";
+    router.push(destination);
   }
 
   

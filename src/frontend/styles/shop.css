@@ -2138,3 +2138,299 @@
 .productSizeBtnSoldOut { opacity: 0.55; }
 .productSizeLabel { font-weight: 600; }
 .productSizePrice { font-size: 0.85rem; opacity: 0.8; }
+
+/* ---- Checkout page ---- */
+
+.coHint {
+  margin: 0 0 12px;
+  font-size: 0.88rem;
+  color: var(--muted);
+}
+
+.coAddrList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.coAddr {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.coAddr:hover {
+  border-color: #d8d2c2;
+}
+
+.coAddrSelected {
+  border-color: var(--olive);
+  background: #f7f5ef;
+}
+
+.coAddr input[type="radio"],
+.coPay input[type="radio"] {
+  accent-color: var(--olive);
+  margin-top: 3px;
+  flex-shrink: 0;
+}
+
+.coAddrLocked {
+  opacity: 0.75;
+  cursor: default;
+}
+
+.coAddrBody {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.coAddrTop {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.coAddrName {
+  font-size: 0.95rem;
+  color: var(--ink);
+}
+
+.coAddrBadge {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: #1f7a3d;
+  background: #eaf4ee;
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+
+.coAddrText {
+  font-size: 0.85rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.coAddrPhone {
+  font-size: 0.85rem;
+  color: var(--ink);
+}
+
+.coAddBtn {
+  width: 100%;
+  margin-top: 12px;
+  border: 1px dashed var(--border);
+  border-radius: 10px;
+  background: none;
+  padding: 12px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--olive);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.coAddBtn:hover {
+  background: #f7f5ef;
+}
+
+.coSection {
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+
+.coForm {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 14px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #fdfcf9;
+}
+
+.coFormGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.coFormGrid3 {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.coInput {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  color: var(--ink);
+  background: #fff;
+}
+
+.coInput:focus {
+  outline: none;
+  border-color: var(--olive);
+}
+
+.coCheck {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.coCheck input {
+  accent-color: var(--olive);
+}
+
+.coFormActions {
+  display: flex;
+  gap: 10px;
+}
+
+.coFormActions .addToCartBtn {
+  justify-content: center;
+}
+
+.coCancelBtn {
+  width: auto;
+  padding: 8px 22px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.coError {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #c0392b;
+  line-height: 1.4;
+}
+
+.coNotice {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #8a6d1f;
+  background: #fdf6e3;
+  border: 1px solid #f0e3bd;
+  border-radius: 8px;
+  padding: 10px 12px;
+  line-height: 1.45;
+}
+
+.coPayList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.coPay {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.coPay:hover {
+  border-color: #d8d2c2;
+}
+
+.coPaySelected {
+  border-color: var(--olive);
+  background: #f7f5ef;
+}
+
+.coPayBody {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.coPayTitle {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.coPayDesc {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.coPendingBanner {
+  margin: 20px 0 0;
+  padding: 12px 14px;
+  border: 1px solid #f0e3bd;
+  border-radius: 10px;
+  background: #fdf6e3;
+  font-size: 0.86rem;
+  color: var(--ink);
+  line-height: 1.5;
+}
+
+.coSummaryItems {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--border);
+}
+
+.coSummaryItem {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 0.87rem;
+  color: var(--ink);
+}
+
+.coSummaryItemName {
+  min-width: 0;
+}
+
+.coSummaryItemMeta {
+  color: var(--muted);
+}
+
+.coSummaryItemQty {
+  color: var(--muted);
+}
+
+.coSummaryItemPrice {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.coDeliveryRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  color: #1f7a3d;
+}
+
+@media (max-width: 800px) {
+  .coFormGrid,
+  .coFormGrid3 {
+    grid-template-columns: 1fr;
+  }
+}
