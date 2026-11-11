@@ -5,6 +5,8 @@ import { createClient } from "@/backend/supabase/server";
 
 export type ActionResult = {
   error: string | null;
+  /** Set by addAddress so callers can select the row they just created. */
+  id?: string;
 };
 
 export type Address = {
@@ -73,23 +75,27 @@ export async function addAddress(input: AddressInput): Promise<ActionResult> {
       .eq("user_id", user.id);
   }
 
-  const { error } = await supabase.from("addresses").insert({
-    user_id: user.id,
-    name: fullName,
-    phone,
-    address_line: line1,
-    landmark: line2 || null,
-    city,
-    state,
-    pincode,
-    is_default: makeDefault,
-  });
+  const { data: inserted, error } = await supabase
+    .from("addresses")
+    .insert({
+      user_id: user.id,
+      name: fullName,
+      phone,
+      address_line: line1,
+      landmark: line2 || null,
+      city,
+      state,
+      pincode,
+      is_default: makeDefault,
+    })
+    .select("id")
+    .single();
 
   if (error) return { error: error.message };
 
   revalidatePath("/profile");
   revalidatePath("/profile/addresses");
-  return { error: null };
+  return { error: null, id: inserted?.id };
 }
 
 export async function setDefaultAddress(id: string): Promise<ActionResult> {

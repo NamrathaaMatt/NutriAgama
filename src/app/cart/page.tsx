@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useProducts } from "@/frontend/hooks/use-products";
 import { useCart } from "@/frontend/hooks/use-cart";
 import Navbar from "@/frontend/components/navbar/Navbar";
@@ -170,6 +171,7 @@ function CartSuggestionCard({ item }: { item: SuggestionProduct }) {
 }
 
 export default function CartPage() {
+  const router = useRouter();
   const { products, loaded: productsLoaded, refreshProducts } = useProducts();
   const { items, loaded, clearCart } = useCart();
 
@@ -284,6 +286,7 @@ export default function CartPage() {
                 type="button"
                 className="addToCartBtn cartCheckoutBtn"
                 disabled={hasOutOfStock}
+                onClick={() => router.push("/checkout")}
               >
                 Proceed to Checkout →
               </button>
