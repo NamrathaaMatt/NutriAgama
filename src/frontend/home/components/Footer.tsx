@@ -152,10 +152,10 @@ export default function Footer() {
             </span>
 
             <a
-              href="tel:+918073140054"
+              href="tel:+919036572176"
               className={styles.contactTextLink}
             >
-              +91 80731 40054
+              +91 90365 72176
             </a>
 
             <a
@@ -174,7 +174,9 @@ export default function Footer() {
             </span>
 
             <a
-              href="mailto:aruyaagamasirinutri55@gmail.com"
+              href="https://mail.google.com/mail/?view=cm&fs=1&to=aruyaagamasirinutri55@gmail.com"
+              target="_blank"
+              rel="noopener noreferrer"
               className={styles.contactTextLink}
             >
               aruyaagamasirinutri55@gmail.com

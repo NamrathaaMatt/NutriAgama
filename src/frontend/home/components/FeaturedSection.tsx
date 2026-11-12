@@ -160,7 +160,9 @@ export default function FeaturedSection({ currentSlide }: FeaturedSectionProps) 
       <FeaturedBackground slide={bgSlide} />
 
       {/* ── "ROOTED IN WELLNESS" label ─────────────── */}
-      <p className={styles.featuredLabel}>ROOTED IN WELLNESS</p>
+      <p className={styles.featuredLabel}>
+        {featuredSlide.id === "protein" ? "POWERED BY SUPERFOODS" : "ROOTED IN WELLNESS"}
+      </p>
 
       <div className={styles.featuredContent}>
         {/* ─── LEFT: large product image (clickable like small cards) ─── */}
